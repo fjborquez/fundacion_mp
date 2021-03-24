@@ -8,19 +8,18 @@ use Illuminate\Support\Facades\Http;
 use BenTools\ETL\Etl;
 use BenTools\ETL\EtlBuilder;
 use BenTools\ETL\Transformer\CallableTransformer;
+use App\GeneralSettings;
 
 class MercadoPublicoController extends Controller
 {
-    public function index() {
+    public function index(GeneralSettings $settings) {
         // TOOD: Si viene de tarea automatica, no enviar a salesforce
 
         // TODO: Obtener desde configuracion
-        $ticket = "F8537A18-6766-4DEF-9E59-426B4FEE2844";
+        $ticket = $settings->mercado_publico_ticket;
 
         // TODO: Obtener desde configuracion 
-        $url = "http://api.mercadopublico.cl/servicios/v1/publico/licitaciones.json";
-
-        // TOOD: Formato fecha desde configuracion
+        $url = $settings->mercado_publico_url_licitaciones;
         $fecha = Carbon::now()->format('dmY');
 
         // TODO: Controlar codigo y mensaje de respuesta en caso de error
