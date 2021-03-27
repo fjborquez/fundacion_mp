@@ -28,10 +28,34 @@ class MercadoPublicoController extends Controller
 
         if ($response->successful()) {
             if ($response->collect()->has('Listado')) {
-                $licitaciones = $response->collect()->get('Listado');
+                $licitaciones = [];
+                $licitacionesProcesadas = [];
+
+                foreach($response->collect()->get('Listado') as $licitacionEnLista) {
+                    $resp = Http::get($url, [
+                        'ticket' => $ticket,
+                        'codigo' => $licitacionEnLista['CodigoExterno']
+                    ]);
+    
+                    if ($resp->successful()) {
+                        if ($resp->collect()->has('Listado')) {
+                            $licitaciones[] = $resp->collect()->get('Listado')[0];
+                        } else {
+                            Log::error('Error al intentar rescatar listado de licitaciones. No hay campo Listado en el body: ');
+                            Log::error($resp->body());
+                        }
+                    } else {
+                        Log::error('Error al intentar obtener datos de ' . $url . '?codigo=' . $licitacionEnLista['CodigoExterno'] . '&ticket=' . $ticket);
+                    }
+                }
+
                 $etl = EtlBuilder::init()
                     ->transformWith(function($item) {
-                        yield array_map('strtolower', $item);
+                        array_walk_recursive($item, function (&$value) {
+                            $value = strtolower($value);
+                        });
+
+                        yield $item;
                     })
                     ->loadInto(
                         function ($generated, $key, Etl $etl) use (&$licitacionesProcesadas) {
