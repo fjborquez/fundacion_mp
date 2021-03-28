@@ -20,9 +20,8 @@ class MercadoPublicoController extends Controller
 
         $ticket = $settings->mercado_publico_ticket;
         $url = $settings->mercado_publico_url_licitaciones;
-        //$fecha = Carbon::now()->format('dmY');
-        $fecha = '02022007';
-
+        $fecha = Carbon::now()->format('dmY');
+        
         $listaTipoLicitacionPermitidos = explode(';', $settings->mercado_publico_filtro_tipo_licitacion);
         $listaPalabrasExcluidas = explode(';', $settings->mercado_publico_filtro_palabras_excluidas);
 
