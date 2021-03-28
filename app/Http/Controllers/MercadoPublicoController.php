@@ -21,7 +21,9 @@ class MercadoPublicoController extends Controller
         $url = $settings->mercado_publico_url_licitaciones;
         $fecha = Carbon::now()->format('dmY');
 
-        $response = Http::get($url, [
+        $listaTipoLicitacionPermitidos = explode(';', $settings->mercado_publico_filtro_tipo_licitacion);
+
+        $response = Http::retry(3, 1000)->get($url, [
             'fecha' => $fecha,
             'ticket' => $ticket
         ]);
@@ -32,7 +34,9 @@ class MercadoPublicoController extends Controller
                 $licitacionesProcesadas = [];
 
                 foreach($response->collect()->get('Listado') as $licitacionEnLista) {
-                    $resp = Http::get($url, [
+                    sleep(5);
+
+                    $resp = Http::retry(3, 500)->get($url, [
                         'ticket' => $ticket,
                         'codigo' => $licitacionEnLista['CodigoExterno']
                     ]);
@@ -58,13 +62,14 @@ class MercadoPublicoController extends Controller
                         yield $item;
                     })
                     ->loadInto(
-                        function ($generated, $key, Etl $etl) use (&$licitacionesProcesadas) {
+                        function ($generated, $key, Etl $etl) use (&$licitacionesProcesadas, $listaTipoLicitacionPermitidos) {
                             foreach ($generated as $licitacion) {
-                                // TODO: Filtrar segun palabras clave/excluidas
-                                if (str_contains($licitacion['Nombre'], 'suero')) {
+                                if (!in_array($licitacion['Tipo'], $listaTipoLicitacionPermitidos)) {
                                     $etl->skipCurrentItem();
                                     break;
                                 }
+
+                                // TODO: Filtrar segun palabras clave/excluidas
                                 $licitacionesProcesadas[] = $licitacion;
                             }
                         })
