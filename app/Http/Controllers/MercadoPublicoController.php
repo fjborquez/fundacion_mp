@@ -10,6 +10,7 @@ use BenTools\ETL\EtlBuilder;
 use BenTools\ETL\Transformer\CallableTransformer;
 use App\GeneralSettings;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class MercadoPublicoController extends Controller
 {
@@ -19,9 +20,11 @@ class MercadoPublicoController extends Controller
 
         $ticket = $settings->mercado_publico_ticket;
         $url = $settings->mercado_publico_url_licitaciones;
-        $fecha = Carbon::now()->format('dmY');
+        //$fecha = Carbon::now()->format('dmY');
+        $fecha = '02022007';
 
         $listaTipoLicitacionPermitidos = explode(';', $settings->mercado_publico_filtro_tipo_licitacion);
+        $listaPalabrasExcluidas = explode(';', $settings->mercado_publico_filtro_palabras_excluidas);
 
         $response = Http::retry(3, 1000)->get($url, [
             'fecha' => $fecha,
@@ -62,9 +65,14 @@ class MercadoPublicoController extends Controller
                         yield $item;
                     })
                     ->loadInto(
-                        function ($generated, $key, Etl $etl) use (&$licitacionesProcesadas, $listaTipoLicitacionPermitidos) {
+                        function ($generated, $key, Etl $etl) use (&$licitacionesProcesadas, $listaTipoLicitacionPermitidos, $listaPalabrasExcluidas) {
                             foreach ($generated as $licitacion) {
                                 if (!in_array($licitacion['Tipo'], $listaTipoLicitacionPermitidos)) {
+                                    $etl->skipCurrentItem();
+                                    break;
+                                }
+
+                                if (Str::of($licitacion['Nombre'])->contains($listaPalabrasExcluidas)) {
                                     $etl->skipCurrentItem();
                                     break;
                                 }
