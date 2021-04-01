@@ -28,6 +28,8 @@ class GeneralSettings extends Settings {
     public string $mercado_publico_filtro_palabras_clave_eficiencia_energetica;
     public string $mercado_publico_filtro_palabras_excluidas_medio_ambiente;
 
+    public string $mercado_publico_cron_tarea_automatica;
+
     public static function group(): string {
         return 'general';
     }
