@@ -32,7 +32,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         $schedule->call(function () {
             $mercadoPublicoETL = new MercadoPublicoETL();
-            $mercadoPublicoETL->generarETL(app(GeneralSettings::class));
+            $mercadoPublicoETL->generarETL();
         })->cron($settings->mercado_publico_cron_tarea_automatica);
     }
 

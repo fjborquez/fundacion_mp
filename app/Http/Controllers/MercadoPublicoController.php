@@ -9,7 +9,7 @@ use App\Services\Etl\MercadoPublicoETL;
 
 class MercadoPublicoController extends Controller
 {
-    public function index(GeneralSettings $settings, MercadoPublicoETL $mercadoPublicoETL) {
-        return $mercadoPublicoETL->generarETL($settings);
+    public function index(MercadoPublicoETL $mercadoPublicoETL) {
+        return $mercadoPublicoETL->generarETL();
     }
 }
