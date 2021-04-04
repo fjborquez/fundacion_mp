@@ -156,12 +156,11 @@ class MercadoPublicoETL {
                                                 ]
                                             ]);
                                         } else {
-                                            // TODO: FirstName y LastName configurables
                                             $addLeadResponse = Forrest::sobjects('Lead',[
                                                 'method' => 'post',
                                                 'body'   => [
-                                                    'FirstName' => 'CONTACTO',
-                                                    'LastName' => 'GENERICO',
+                                                    'FirstName' => $configuraciones['salesforce_default_firstname'],
+                                                    'LastName' => $configuraciones['salesforce_default_lastname'],
                                                     'DNI__c' => $rutProveedor,
                                                     'Company' => $nombreProveedor,
                                                     'Address__c' => '',
@@ -173,8 +172,7 @@ class MercadoPublicoETL {
                                             $leadId = $addLeadResponse['id'];
                                         }
                                     }
-                                    
-                                    // TODO: RecordTypeId como configuracion
+
                                     Forrest::sobjects('BiographicalEvent__c',[
                                         'method' => 'post',
                                         'body'   => [
@@ -186,7 +184,7 @@ class MercadoPublicoETL {
                                             'BidOrganization__c' => $licitacion['Comprador']['NombreOrganismo'],
                                             'Lead__c' => $leadId,
                                             'Account__c' => $accountId,
-                                            'RecordTypeId' => '0121U000001O0IQQA0'
+                                            'RecordTypeId' => $configuraciones['salesforce_record_type_id']
                                         ]
                                     ]);
                                 } 
@@ -208,7 +206,7 @@ class MercadoPublicoETL {
         $licitaciones = [];
         $configuraciones = $this->obtenerConfiguraciones();
 
-        $response = Http::retry(3, 5000)->get($configuraciones['url'], [
+        $response = Http::retry(3, $configuraciones['milisegundos_entre_consultas'])->get($configuraciones['url'], [
             'fecha' => $configuraciones['fecha'],
             'ticket' => $configuraciones['ticket']
         ]);
@@ -216,9 +214,9 @@ class MercadoPublicoETL {
         if ($response->successful() ) {
             if ($response->collect()->has('Listado')) {
                 foreach($response->collect()->get('Listado') as $licitacionEnLista) {
-                    sleep(5);
+                    sleep($configuraciones['segundos_entre_consultas']);
 
-                    $resp = Http::retry(3, 5000)->get($configuraciones['url'], [
+                    $resp = Http::retry(3, $configuraciones['milisegundos_entre_consultas'])->get($configuraciones['url'], [
                         'ticket' => $configuraciones['ticket'],
                         'codigo' => $licitacionEnLista['CodigoExterno']
                     ]);
@@ -254,6 +252,11 @@ class MercadoPublicoETL {
         $configuraciones['ticket'] = $settings->mercado_publico_ticket;
         $configuraciones['url'] = $settings->mercado_publico_url_licitaciones;
         $configuraciones['fecha'] = Carbon::now()->format('dmY');
+        $configuraciones['salesforce_record_type_id'] = $settings->mercado_publico_salesforce_record_type_id;
+        $configuraciones['salesforce_default_firstname'] = $settings->mercado_publico_salesforce_default_firstname;
+        $configuraciones['salesforce_default_lastname'] = $settings->mercado_publico_salesforce_default_lastname;
+        $configuraciones['segundos_entre_consultas'] = $settings->mercado_publico_segundos_entre_consultas * 1;
+        $configuraciones['milisegundos_entre_consultas'] = $settings->mercado_publico_segundos_entre_consultas * 1000;
 
         $listaTipoLicitacionPermitidos = explode(';', $settings->mercado_publico_filtro_tipo_licitacion);
         $listaPalabrasExcluidas = explode(';', $settings->mercado_publico_filtro_palabras_excluidas);
