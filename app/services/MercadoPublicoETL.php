@@ -130,7 +130,7 @@ class MercadoPublicoETL {
             
                                 if ($accountResponse['totalSize'] > 0) {
                                     $accountId = $accountResponse['records'][0]['Id'];
-                                    Forrest::sobjects('Lead/' . $accountId,[
+                                    Forrest::sobjects('Account/' . $accountId,[
                                             'method' => 'patch',
                                             'body'   => [
                                                 'DNI__c' => $rutProveedor,
@@ -171,7 +171,8 @@ class MercadoPublicoETL {
                                         $leadId = $addLeadResponse['id'];
                                     }
                                 }
-            
+                                
+                                // TODO: RecordTypeId como configuracion
                                 Forrest::sobjects('BiographicalEvent__c',[
                                     'method' => 'post',
                                     'body'   => [
