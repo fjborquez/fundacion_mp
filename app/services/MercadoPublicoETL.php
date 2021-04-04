@@ -10,7 +10,8 @@ use BenTools\ETL\EtlBuilder;
 use BenTools\ETL\Transformer\CallableTransformer;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-
+use Illuminate\Support\Arr;
+use Omniphx\Forrest\Providers\Laravel\Facades\Forrest;
 
 class MercadoPublicoETL {
     public function generarETL() {
@@ -21,16 +22,27 @@ class MercadoPublicoETL {
         $etl = EtlBuilder::init()
             ->transformWith(function($item) {
                 array_walk_recursive($item, function (&$value) {
-                    $value = strtolower($value);
+                    $value = mb_convert_encoding(Str::lower($value), "UTF-8");
                 });
         
                 yield $item;
             })
             ->loadInto(
                 function ($generated, $key, Etl $etl) use (&$licitacionesProcesadas, $configuraciones) {
+                    Forrest::authenticate();
                     $listasPalabras = $configuraciones['listasPalabras'];
 
                     foreach ($generated as $licitacion) {
+                        if (!Arr::exists($licitacion, 'Adjudicacion') || $licitacion['Adjudicacion'] == null) {
+                            $etl->skipCurrentItem();
+                            break;
+                        }
+
+                        if (!Arr::exists($licitacion, 'Items') || count($licitacion['Items']) < 1) {
+                            $etl->skipCurrentItem();
+                            break;
+                        }
+
                         if (!in_array($licitacion['Tipo'], $listasPalabras['listaTipoLicitacionPermitidos'])) {
                             $etl->skipCurrentItem();
                             break;
@@ -104,6 +116,77 @@ class MercadoPublicoETL {
                             && Str::of($licitacion['Nombre'])->contains($listasPalabras['excluidasMedioAmbiente'])) {
                             $etl->skipCurrentItem();
                             break;
+                        }
+
+                        foreach($licitacion['Items']['Listado'] as $item) {
+                            if (Arr::exists($item, 'Adjudicacion') && is_array($item['Adjudicacion'])) {
+                                $rutProveedor = str_replace('.', '', $item['Adjudicacion']['RutProveedor']);
+                                $nombreProveedor = $item['Adjudicacion']['NombreProveedor'];
+            
+                                $accountResponse = Forrest::query('SELECT Id FROM Account WHERE DNI__c = \'' . $rutProveedor . '\'');
+            
+                                $accountId = '';
+                                $leadId = '';
+            
+                                if ($accountResponse['totalSize'] > 0) {
+                                    $accountId = $accountResponse['records'][0]['Id'];
+                                    Forrest::sobjects('Lead/' . $accountId,[
+                                            'method' => 'patch',
+                                            'body'   => [
+                                                'DNI__c' => $rutProveedor,
+                                                'Company' => $nombreProveedor,
+                                                'Area__c' => $licitacion['area'],
+                                                'Industry' => $licitacion['sector']
+                                            ]
+                                        ]);
+                                } else {
+                                    $leadResponse = Forrest::query('SELECT Id FROM LEAD WHERE DNI__c = \'' . $rutProveedor . '\'');
+            
+                                    if ($leadResponse['totalSize'] > 0) {
+                                        $leadId = $leadResponse['records'][0]['Id'];
+                                        Forrest::sobjects('Lead/' . $leadId,[
+                                            'method' => 'patch',
+                                            'body'   => [
+                                                'DNI__c' => $rutProveedor,
+                                                'Company' => $nombreProveedor,
+                                                'Area__c' => $licitacion['area'],
+                                                'Industry' => $licitacion['sector']
+                                            ]
+                                        ]);
+                                    } else {
+                                        // TODO: FirstName y LastName configurables
+                                        $addLeadResponse = Forrest::sobjects('Lead',[
+                                            'method' => 'post',
+                                            'body'   => [
+                                                'FirstName' => 'CONTACTO',
+                                                'LastName' => 'GENERICO',
+                                                'DNI__c' => $rutProveedor,
+                                                'Company' => $nombreProveedor,
+                                                'Address__c' => '',
+                                                'Area__c' => $licitacion['area'],
+                                                'Industry' => $licitacion['sector']
+                                            ]
+                                        ]);
+            
+                                        $leadId = $addLeadResponse['id'];
+                                    }
+                                }
+            
+                                Forrest::sobjects('BiographicalEvent__c',[
+                                    'method' => 'post',
+                                    'body'   => [
+                                        'BidId__c' => $licitacion['CodigoExterno'],
+                                        'BidName__c' => $licitacion['Nombre'],
+                                        'Description__c' => $licitacion['Descripcion'],
+                                        'BidAmount__c' => $licitacion['MontoEstimado'],
+                                        'BidType__c' => $licitacion['Tipo'],
+                                        'BidOrganization__c' => $licitacion['Comprador']['NombreOrganismo'],
+                                        'Lead__c' => $leadId,
+                                        'Account__c' => $accountId,
+                                        'RecordTypeId' => '0121U000001O0IQQA0'
+                                    ]
+                                ]);
+                            } 
                         }
 
                         $licitacionesProcesadas[] = $licitacion;
