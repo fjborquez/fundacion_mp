@@ -9,7 +9,7 @@ use App\Services\Etl\MercadoPublicoETL;
 
 class MercadoPublicoController extends Controller
 {
-    public function index(MercadoPublicoETL $mercadoPublicoETL) {
-        return $mercadoPublicoETL->generarETL();
+    public function index(Request $request, MercadoPublicoETL $mercadoPublicoETL) {
+        return $mercadoPublicoETL->generarETL($request->input('sendToSalesforce'));
     }
 }

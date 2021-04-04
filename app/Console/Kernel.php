@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $settings = app(GeneralSettings::class);
-        $schedule->command('mpetl:generar')->cron($settings->mercado_publico_cron_tarea_automatica);
+        $schedule->command('mpetl:generar --sendToSalesforce')->cron($settings->mercado_publico_cron_tarea_automatica);
     }
 
     /**

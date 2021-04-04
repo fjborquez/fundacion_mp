@@ -12,7 +12,7 @@ class MercadoPublicoETLCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'mpetl:generar';
+    protected $signature = 'mpetl:generar {--sendToSalesforce}';
 
     /**
      * The console command description.
@@ -38,7 +38,8 @@ class MercadoPublicoETLCommand extends Command
      */
     public function handle(MercadoPublicoETL $mercadoPublicoETL)
     {
-        $mercadoPublicoETL->generarETL();
+        $sendToSalesforce = $this->option('sendToSalesforce');
+        $mercadoPublicoETL->generarETL($sendToSalesforce);
         return 0;
     }
 }
