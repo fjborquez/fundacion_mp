@@ -173,6 +173,7 @@ class MercadoPublicoETL {
                                         }
                                     }
 
+                                    // TODO: Name como settings
                                     Forrest::sobjects('BiographicalEvent__c',[
                                         'method' => 'post',
                                         'body'   => [
@@ -184,7 +185,10 @@ class MercadoPublicoETL {
                                             'BidOrganization__c' => $licitacion['Comprador']['NombreOrganismo'],
                                             'Lead__c' => $leadId,
                                             'Account__c' => $accountId,
-                                            'RecordTypeId' => $configuraciones['salesforce_record_type_id']
+                                            'RecordTypeId' => $configuraciones['salesforce_record_type_id'],
+                                            'Date__c' => Carbon::parse($licitacion['Adjudicacion']['Fecha'])->format('Y-m-d'),
+                                            'BidAmount__c' => $item['Adjudicacion']['Cantidad'] * $item['Adjudicacion']['MontoUnitario'],
+                                            'Name' => 'Búsqueda Mercado Publico'
                                         ]
                                     ]);
                                 } 
