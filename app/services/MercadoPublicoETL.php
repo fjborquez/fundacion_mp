@@ -12,9 +12,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Omniphx\Forrest\Providers\Laravel\Facades\Forrest;
+use Illuminate\Http\Client\RequestException;
+use BenTools\ETL\EventDispatcher\Event\EndProcessEvent;
 
 class MercadoPublicoETL {
     public function generarETL($sendToSalesforce = false) {
+        // TODO: Controlar que no exista ejecución en curso
+        Log::info('Ha iniciado el proceso de ETL');
+
         $licitacionesProcesadas = [];
         $configuraciones = $this->obtenerConfiguraciones();
         $licitaciones = $this->obtenerLicitaciones();
@@ -120,6 +125,8 @@ class MercadoPublicoETL {
                         }
 
                         if ($sendToSalesforce) {
+                            Log::info('Se enviaran licitaciones a Salesforce.');
+
                             foreach($licitacion['Items']['Listado'] as $item) {
                                 if (Arr::exists($item, 'Adjudicacion') && is_array($item['Adjudicacion'])) {
                                     $rutProveedor = str_replace('.', '', $item['Adjudicacion']['RutProveedor']);
@@ -199,6 +206,9 @@ class MercadoPublicoETL {
                         $licitacionesProcesadas[] = $licitacion;
                     }
                 })
+            ->onEnd(function(EndProcessEvent $event) use (&$licitacionesProcesadas) {
+                Log::info('Ha concluido la ETL con ' . count($licitacionesProcesadas) . ' licitaciones filtradas.');
+            })
             ->createEtl();
 
         $etl->process($licitaciones);
@@ -210,43 +220,50 @@ class MercadoPublicoETL {
         $licitaciones = [];
         $configuraciones = $this->obtenerConfiguraciones();
 
+        // TODO: Cantidad de reintentos por configuracion
+        // Obtener listado de licitaciones sin detalles
         $response = Http::retry(3, $configuraciones['milisegundos_entre_consultas'])->get($configuraciones['url'], [
             'fecha' => $configuraciones['fecha'],
             'ticket' => $configuraciones['ticket']
         ]);
 
-        if ($response->successful() ) {
-            if ($response->collect()->has('Listado')) {
-                foreach($response->collect()->get('Listado') as $licitacionEnLista) {
-                    sleep($configuraciones['segundos_entre_consultas']);
-
-                    $resp = Http::retry(3, $configuraciones['milisegundos_entre_consultas'])->get($configuraciones['url'], [
-                        'ticket' => $configuraciones['ticket'],
-                        'codigo' => $licitacionEnLista['CodigoExterno']
-                    ]);
-    
-                    if ($resp->successful()) {
-                        if ($resp->collect()->has('Listado')) {
-                            $licitaciones[] = $resp->collect()->get('Listado')[0];
-                        } else {
-                            Log::error('Error al intentar consultar datos de licitacion desde ' . $configuraciones['url'] . '?codigo=' . $licitacionEnLista['CodigoExterno'] . '&ticket=' . $configuraciones['ticket']);
-                            throw new Exception('Error al intentar consultar datos de licitacion');
-                        }
-                    } else {
-                        Log::error('Error al intentar obtener datos de licitacion desde ' . $configuraciones['url'] . '?codigo=' . $licitacionEnLista['CodigoExterno'] . '&ticket=' . $configuraciones['ticket']);
-                        throw new Exception('Error al intentar obtener datos de licitacion');
-                    }
-                }
-
-                return $licitaciones;
-            } else {
-                Log::error('Error al intentar consultar licitaciones desde ' . $configuraciones['url'] . '?fecha=' . $configuraciones['fecha'] . '&ticket=' . $configuraciones['ticket']);
-                throw new Exception('Error al intentar consultar licitaciones');
-            }
-        } else {
-            Log::error('Error al intentar obtener listado  de licitaciones desde ' . $configuraciones['url'] . '?fecha=' . $configuraciones['fecha'] . '&ticket=' . $configuraciones['ticket']);
-            throw new Exception('Error al intentar obtener listado de licitaciones');
+        if (!$response->successful()) {
+            $response->throw();
         }
+
+        if (!$response->collect()->has('Listado')) {
+            throw new DomainException('No hay campo Listado al consultar por todas las licitaciones');
+        }
+
+        Log::info('Se encontraron ' . $response->collect()->get('Cantidad') . ' licitaciones en listado del día.');
+
+        // Obtener detalles de las licitaciones
+        foreach($response->collect()->get('Listado') as $licitacionEnLista) {
+            sleep($configuraciones['segundos_entre_consultas']);
+
+            try {
+                $resp = Http::retry(3, $configuraciones['milisegundos_entre_consultas'])->get($configuraciones['url'], [
+                    'ticket' => $configuraciones['ticket'],
+                    'codigo' => $licitacionEnLista['CodigoExterno']
+                ]);
+    
+                if ($resp->successful()) {
+                    if ($resp->collect()->has('Listado')) {
+                        $licitaciones[] = $resp->collect()->get('Listado')[0];
+                    } else {
+                        Log::error('La licitacion ' . $licitacionEnLista['CodigoExterno'] . ' no tiene campo Listado');
+                    }
+                } else {
+                    $resp->throw();
+                }
+            } catch(Exception $e) {
+                Log::error('Error al consultar por licitacion ' . $licitacionEnLista['CodigoExterno'] . ': ' . $e->getMessage());
+            }
+        }
+
+        Log::info('Se encontraron ' . count($licitaciones) . ' licitaciones con detalles.');
+
+        return $licitaciones;
     }
 
     function obtenerConfiguraciones() {
