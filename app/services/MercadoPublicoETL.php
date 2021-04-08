@@ -12,12 +12,27 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Omniphx\Forrest\Providers\Laravel\Facades\Forrest;
-use Illuminate\Http\Client\RequestException;
 use BenTools\ETL\EventDispatcher\Event\EndProcessEvent;
+use RuntimeException;
+use Exception;
 
 class MercadoPublicoETL {
     public function generarETL($sendToSalesforce = false) {
-        // TODO: Controlar que no exista ejecución en curso
+        $fp = fopen(storage_path('framework/locks/etlmp.txt'), "r+");
+        $licitaciones = [];
+
+        if (!flock($fp, LOCK_EX | LOCK_NB)) {
+            fclose($fp);
+            throw new RuntimeException('Una ejecución del proceso ya está en curso');
+        }
+
+        $licitaciones = $this->ejecutar($sendToSalesforce);
+        flock($fp, LOCK_UN);
+
+        return $licitaciones;
+    }
+
+    public function ejecutar($sendToSalesforce = false) {
         Log::info('Ha iniciado el proceso de ETL');
 
         $licitacionesProcesadas = [];
@@ -256,7 +271,7 @@ class MercadoPublicoETL {
                 } else {
                     $resp->throw();
                 }
-            } catch(RequestException | Exception $e) {
+            } catch(Exception $e) {
                 Log::error('Error al consultar por licitacion ' . $licitacionEnLista['CodigoExterno'] . ': ' . $e->getMessage());
             }
         }
