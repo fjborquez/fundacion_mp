@@ -256,7 +256,7 @@ class MercadoPublicoETL {
                 } else {
                     $resp->throw();
                 }
-            } catch(Exception $e) {
+            } catch(RequestException | Exception $e) {
                 Log::error('Error al consultar por licitacion ' . $licitacionEnLista['CodigoExterno'] . ': ' . $e->getMessage());
             }
         }
