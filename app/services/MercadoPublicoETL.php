@@ -286,7 +286,7 @@ class MercadoPublicoETL {
         $configuraciones['ticket'] = $settings->mercado_publico_ticket;
         $configuraciones['url'] = $settings->mercado_publico_url_licitaciones;
         $configuraciones['retry'] = $settings->mercado_publico_retry;
-        $configuraciones['fecha'] = Carbon::now()->format('dmY');
+        $configuraciones['fecha'] = Carbon::yesterday()->format('dmY');
         $configuraciones['salesforce_record_type_id'] = $settings->mercado_publico_salesforce_record_type_id;
         $configuraciones['salesforce_default_firstname'] = $settings->mercado_publico_salesforce_default_firstname;
         $configuraciones['salesforce_default_lastname'] = $settings->mercado_publico_salesforce_default_lastname;
