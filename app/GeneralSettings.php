@@ -7,6 +7,7 @@ use Spatie\LaravelSettings\Settings;
 class GeneralSettings extends Settings {
     public string $mercado_publico_ticket;
     public string $mercado_publico_url_licitaciones;
+    public string $mercado_publico_retry;
     public string $mercado_publico_filtro_tipo_licitacion;
     public string $mercado_publico_filtro_palabras_excluidas;
     
@@ -32,6 +33,7 @@ class GeneralSettings extends Settings {
     public string $mercado_publico_salesforce_record_type_id;
     public string $mercado_publico_salesforce_default_firstname;
     public string $mercado_publico_salesforce_default_lastname;
+    public string $mercado_publico_salesforce_default_biographical_event_name;
     public string $mercado_publico_segundos_entre_consultas;
 
     public static function group(): string {

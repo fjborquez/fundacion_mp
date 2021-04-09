@@ -195,7 +195,6 @@ class MercadoPublicoETL {
                                         }
                                     }
 
-                                    // TODO: Name como settings
                                     Forrest::sobjects('BiographicalEvent__c',[
                                         'method' => 'post',
                                         'body'   => [
@@ -210,7 +209,7 @@ class MercadoPublicoETL {
                                             'RecordTypeId' => $configuraciones['salesforce_record_type_id'],
                                             'Date__c' => Carbon::parse($licitacion['Adjudicacion']['Fecha'])->format('Y-m-d'),
                                             'BidAmount__c' => $item['Adjudicacion']['Cantidad'] * $item['Adjudicacion']['MontoUnitario'],
-                                            'Name' => 'Búsqueda Mercado Publico'
+                                            'Name' => $configuraciones['salesforce_default_biographical_event_name']
                                         ]
                                     ]);
                                 } 
@@ -235,9 +234,8 @@ class MercadoPublicoETL {
         $licitaciones = [];
         $configuraciones = $this->obtenerConfiguraciones();
 
-        // TODO: Cantidad de reintentos por configuracion
         // Obtener listado de licitaciones sin detalles
-        $response = Http::retry(3, $configuraciones['milisegundos_entre_consultas'])->get($configuraciones['url'], [
+        $response = Http::retry($configuraciones['retry'], $configuraciones['milisegundos_entre_consultas'])->get($configuraciones['url'], [
             'fecha' => $configuraciones['fecha'],
             'ticket' => $configuraciones['ticket']
         ]);
@@ -257,7 +255,7 @@ class MercadoPublicoETL {
             sleep($configuraciones['segundos_entre_consultas']);
 
             try {
-                $resp = Http::retry(3, $configuraciones['milisegundos_entre_consultas'])->get($configuraciones['url'], [
+                $resp = Http::retry($configuraciones['retry'], $configuraciones['milisegundos_entre_consultas'])->get($configuraciones['url'], [
                     'ticket' => $configuraciones['ticket'],
                     'codigo' => $licitacionEnLista['CodigoExterno']
                 ]);
@@ -287,10 +285,12 @@ class MercadoPublicoETL {
         $configuraciones = [];
         $configuraciones['ticket'] = $settings->mercado_publico_ticket;
         $configuraciones['url'] = $settings->mercado_publico_url_licitaciones;
+        $configuraciones['retry'] = $settings->mercado_publico_retry;
         $configuraciones['fecha'] = Carbon::now()->format('dmY');
         $configuraciones['salesforce_record_type_id'] = $settings->mercado_publico_salesforce_record_type_id;
         $configuraciones['salesforce_default_firstname'] = $settings->mercado_publico_salesforce_default_firstname;
         $configuraciones['salesforce_default_lastname'] = $settings->mercado_publico_salesforce_default_lastname;
+        $configuraciones['salesforce_default_biographical_event_name'] = $settings->mercado_publico_salesforce_default_biographical_event_name;
         $configuraciones['segundos_entre_consultas'] = $settings->mercado_publico_segundos_entre_consultas * 1;
         $configuraciones['milisegundos_entre_consultas'] = $settings->mercado_publico_segundos_entre_consultas * 1000;
 
