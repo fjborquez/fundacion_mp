@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Omniphx\Forrest\Providers\Laravel\Facades\Forrest;
 use BenTools\ETL\EventDispatcher\Event\EndProcessEvent;
+use BenTools\ETL\EventDispatcher\Event\ItemExceptionEvent;
 use RuntimeException;
 use Exception;
 
@@ -222,6 +223,10 @@ class MercadoPublicoETL {
                 })
             ->onEnd(function(EndProcessEvent $event) use (&$licitacionesProcesadas) {
                 Log::info('Ha concluido la ETL con ' . count($licitacionesProcesadas) . ' licitaciones filtradas.');
+            })
+            ->onLoadException(function(ItemExceptionEvent $e) {
+                Log::error('Ha ocurrido un error al procesar licitacion ' . $e->getItem()['CodigoExterno'] . ': ' .$e->getException()->getMessage());
+                $e->ignoreException();
             })
             ->createEtl();
 
