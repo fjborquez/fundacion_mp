@@ -34,10 +34,9 @@ class MercadoPublicoETL {
         Log::info('Ha iniciado el proceso de ETL');
 
         $licitacionesProcesadas = [];
-        $configuraciones = $this->obtenerConfiguraciones();
+        $configuraciones = $this->obtenerConfiguraciones($sendToSalesforce);
         $mercadoPublicoHttpClient = new MercadoPublicoHttpClient($configuraciones);
         $licitaciones = $mercadoPublicoHttpClient->obtenerLicitacionesConDetalles($configuraciones['fecha']);
-        $sendToSalesforce = boolval($sendToSalesforce);
 
         $etl = EtlBuilder::init()
             ->transformWith(function($item) {
@@ -48,7 +47,7 @@ class MercadoPublicoETL {
                 yield $item;
             })
             ->loadInto(
-                function ($generated, $key, Etl $etl) use (&$licitacionesProcesadas, $configuraciones, $sendToSalesforce) {
+                function ($generated, $key, Etl $etl) use (&$licitacionesProcesadas, $configuraciones) {
                     Forrest::authenticate();
                     $listasPalabras = $configuraciones['listasPalabras'];
 
@@ -138,7 +137,7 @@ class MercadoPublicoETL {
                             break;
                         }
 
-                        if ($sendToSalesforce) {
+                        if ($configuraciones['sendToSalesforce']) {
                             Log::info('Se enviaran licitaciones a Salesforce.');
 
                             foreach($licitacion['Items']['Listado'] as $item) {
@@ -233,7 +232,7 @@ class MercadoPublicoETL {
         return $licitacionesProcesadas;
     }
 
-    function obtenerConfiguraciones() {
+    function obtenerConfiguraciones($sendToSalesforce) {
         $settings = app(GeneralSettings::class);
 
         $configuraciones = [];
@@ -241,12 +240,15 @@ class MercadoPublicoETL {
         $configuraciones['url'] = $settings->mercado_publico_url_licitaciones;
         $configuraciones['retry'] = $settings->mercado_publico_retry;
         $configuraciones['fecha'] = Carbon::yesterday()->format('dmY');
+        $configuraciones['fecha'] = '07032021';
         $configuraciones['salesforce_record_type_id'] = $settings->mercado_publico_salesforce_record_type_id;
         $configuraciones['salesforce_default_firstname'] = $settings->mercado_publico_salesforce_default_firstname;
         $configuraciones['salesforce_default_lastname'] = $settings->mercado_publico_salesforce_default_lastname;
         $configuraciones['salesforce_default_biographical_event_name'] = $settings->mercado_publico_salesforce_default_biographical_event_name;
         $configuraciones['segundos_entre_consultas'] = $settings->mercado_publico_segundos_entre_consultas * 1;
         $configuraciones['milisegundos_entre_consultas'] = $settings->mercado_publico_segundos_entre_consultas * 1000;
+        $configuraciones['sendToSalesforce'] = boolval($sendToSalesforce);
+
 
         $listaTipoLicitacionPermitidos = explode(';', $settings->mercado_publico_filtro_tipo_licitacion);
         $listaPalabrasExcluidas = explode(';', $settings->mercado_publico_filtro_palabras_excluidas);
@@ -300,7 +302,7 @@ class MercadoPublicoETL {
         }
     }
 
-    private function desbloquear() {
+    private function desbloquear($fp) {
         flock($fp, LOCK_UN);
         fclose($fp);
     }
