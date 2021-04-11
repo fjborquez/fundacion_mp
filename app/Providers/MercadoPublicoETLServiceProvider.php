@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Services\Etl\MercadoPublicoETL;
+use App\Services\MercadoPublico\MercadoPublicoETL;
 
 class MercadoPublicoETLServiceProvider extends ServiceProvider
 {

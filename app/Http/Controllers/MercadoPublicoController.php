@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\GeneralSettings;
-use App\Services\Etl\MercadoPublicoETL;
+use App\Services\MercadoPublico\MercadoPublicoETL;
 
 class MercadoPublicoController extends Controller
 {

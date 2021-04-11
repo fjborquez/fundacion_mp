@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Services\Etl;
+namespace App\Services\MercadoPublico;
 
+use App\Services\MercadoPublico\Clients\MercadoPublicoHttpClient;
 use App\GeneralSettings;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -38,7 +39,8 @@ class MercadoPublicoETL {
 
         $licitacionesProcesadas = [];
         $configuraciones = $this->obtenerConfiguraciones();
-        $licitaciones = $this->obtenerLicitaciones();
+        $mercadoPublicoHttpClient = new MercadoPublicoHttpClient($configuraciones);
+        $licitaciones = $mercadoPublicoHttpClient->obtenerLicitacionesConDetalles($configuraciones['fecha']);
         $sendToSalesforce = boolval($sendToSalesforce);
 
         $etl = EtlBuilder::init()
@@ -233,55 +235,6 @@ class MercadoPublicoETL {
         $etl->process($licitaciones);
         
         return $licitacionesProcesadas;
-    }
-
-    function obtenerLicitaciones() {
-        $licitaciones = [];
-        $configuraciones = $this->obtenerConfiguraciones();
-
-        // Obtener listado de licitaciones sin detalles
-        $response = Http::retry($configuraciones['retry'], $configuraciones['milisegundos_entre_consultas'])->get($configuraciones['url'], [
-            'fecha' => $configuraciones['fecha'],
-            'ticket' => $configuraciones['ticket']
-        ]);
-
-        if (!$response->successful()) {
-            $response->throw();
-        }
-
-        if (!$response->collect()->has('Listado')) {
-            throw new DomainException('No hay campo Listado al consultar por todas las licitaciones');
-        }
-
-        Log::info('Se encontraron ' . $response->collect()->get('Cantidad') . ' licitaciones en listado del día.');
-
-        // Obtener detalles de las licitaciones
-        foreach($response->collect()->get('Listado') as $licitacionEnLista) {
-            sleep($configuraciones['segundos_entre_consultas']);
-
-            try {
-                $resp = Http::retry($configuraciones['retry'], $configuraciones['milisegundos_entre_consultas'])->get($configuraciones['url'], [
-                    'ticket' => $configuraciones['ticket'],
-                    'codigo' => $licitacionEnLista['CodigoExterno']
-                ]);
-    
-                if ($resp->successful()) {
-                    if ($resp->collect()->has('Listado')) {
-                        $licitaciones[] = $resp->collect()->get('Listado')[0];
-                    } else {
-                        Log::error('La licitacion ' . $licitacionEnLista['CodigoExterno'] . ' no tiene campo Listado');
-                    }
-                } else {
-                    $resp->throw();
-                }
-            } catch(Exception $e) {
-                Log::error('Error al consultar por licitacion ' . $licitacionEnLista['CodigoExterno'] . ': ' . $e->getMessage());
-            }
-        }
-
-        Log::info('Se encontraron ' . count($licitaciones) . ' licitaciones con detalles.');
-
-        return $licitaciones;
     }
 
     function obtenerConfiguraciones() {
