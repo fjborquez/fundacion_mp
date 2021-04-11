@@ -20,17 +20,13 @@ use Exception;
 
 class MercadoPublicoETL {
     public function generarETL($sendToSalesforce = false) {
-        $fp = fopen(storage_path('framework/locks/etlmp.txt'), "r+");
         $licitaciones = [];
-
-        if (!flock($fp, LOCK_EX | LOCK_NB)) {
-            fclose($fp);
-            throw new RuntimeException('Una ejecución del proceso ya está en curso');
-        }
-
+        $fp = fopen(storage_path('framework/locks/etlmp.txt'), "r+");
+        
+        $this->bloquear($fp);
         $licitaciones = $this->ejecutar($sendToSalesforce);
-        flock($fp, LOCK_UN);
-
+        $this->desbloquear($fp);
+        
         return $licitaciones;
     }
 
@@ -295,5 +291,17 @@ class MercadoPublicoETL {
         ];
 
         return $configuraciones;
+    }
+
+    private function bloquear($fp) {
+        if (!flock($fp, LOCK_EX | LOCK_NB)) {
+            fclose($fp);
+            throw new RuntimeException('Una ejecución del proceso ya está en curso');
+        }
+    }
+
+    private function desbloquear() {
+        flock($fp, LOCK_UN);
+        fclose($fp);
     }
 }
