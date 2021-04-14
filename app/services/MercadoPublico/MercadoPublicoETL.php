@@ -3,6 +3,7 @@
 namespace App\Services\MercadoPublico;
 
 use App\Services\MercadoPublico\Clients\MercadoPublicoHttpClient;
+use App\Services\MercadoPublico\Clients\BancaEticaSalesforceClient;
 use App\GeneralSettings;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -38,6 +39,10 @@ class MercadoPublicoETL {
         $mercadoPublicoHttpClient = new MercadoPublicoHttpClient($configuraciones);
         $licitaciones = $mercadoPublicoHttpClient->obtenerLicitacionesConDetalles($configuraciones['fecha']);
 
+        if ($configuraciones['sendToSalesforce']) {
+            Log::info('Se enviaran licitaciones a Salesforce.');
+        }
+
         $etl = EtlBuilder::init()
             ->transformWith(function($item) {
                 array_walk_recursive($item, function (&$value) {
@@ -48,8 +53,8 @@ class MercadoPublicoETL {
             })
             ->loadInto(
                 function ($generated, $key, Etl $etl) use (&$licitacionesProcesadas, $configuraciones) {
-                    Forrest::authenticate();
                     $listasPalabras = $configuraciones['listasPalabras'];
+                    $bancaEticaSalesforceClient = new BancaEticaSalesforceClient($configuraciones);
 
                     foreach ($generated as $licitacion) {
                         if (!Arr::exists($licitacion, 'Adjudicacion') || $licitacion['Adjudicacion'] == null) {
@@ -138,82 +143,65 @@ class MercadoPublicoETL {
                         }
 
                         if ($configuraciones['sendToSalesforce']) {
-                            Log::info('Se enviaran licitaciones a Salesforce.');
-
                             foreach($licitacion['Items']['Listado'] as $item) {
                                 if (Arr::exists($item, 'Adjudicacion') && is_array($item['Adjudicacion'])) {
                                     $rutProveedor = str_replace('.', '', $item['Adjudicacion']['RutProveedor']);
                                     $nombreProveedor = $item['Adjudicacion']['NombreProveedor'];
                 
-                                    $accountResponse = Forrest::query('SELECT Id FROM Account WHERE DNI__c = \'' . $rutProveedor . '\'');
+                                    $accountResponse = $bancaEticaSalesforceClient->obtenerAccountPorRut($rutProveedor);
                 
-                                    $accountId = '';
-                                    $leadId = '';
+                                    $account['id'] = '';
+                                    $lead['id'] = '';
                 
                                     if ($accountResponse['totalSize'] > 0) {
-                                        $accountId = $accountResponse['records'][0]['Id'];
-                                        Forrest::sobjects('Account/' . $accountId,[
-                                                'method' => 'patch',
-                                                'body'   => [
-                                                    'DNI__c' => $rutProveedor,
-                                                    'Company' => $nombreProveedor,
-                                                    'Area__c' => $licitacion['area'],
-                                                    'Industry' => $licitacion['sector']
-                                                ]
-                                            ]);
+                                        $account = [
+                                            'id' => $accountResponse['records'][0]['Id'],
+                                            'rut' => $rutProveedor,
+                                            'nombre' => $nombreProveedor,
+                                            'area' => $licitacion['area'],
+                                            'sector' => $licitacion['sector']
+                                        ];
+                                        $bancaEticaSalesforceClient->actualizarAccount($account);
                                     } else {
-                                        $leadResponse = Forrest::query('SELECT Id FROM LEAD WHERE DNI__c = \'' . $rutProveedor . '\'');
-                
+                                        $leadResponse = $bancaEticaSalesforceClient->obtenerLeadPorRut($rutProveedor);
+                                        $lead = [
+                                            'rut' => $rutProveedor,
+                                            'proveedor' => $nombreProveedor,
+                                            'area' => $licitacion['area'],
+                                            'sector' => $licitacion['sector']
+                                        ];
+
                                         if ($leadResponse['totalSize'] > 0) {
-                                            $leadId = $leadResponse['records'][0]['Id'];
-                                            Forrest::sobjects('Lead/' . $leadId,[
-                                                'method' => 'patch',
-                                                'body'   => [
-                                                    'DNI__c' => $rutProveedor,
-                                                    'Company' => $nombreProveedor,
-                                                    'Area__c' => $licitacion['area'],
-                                                    'Industry' => $licitacion['sector']
-                                                ]
-                                            ]);
+                                            $lead['id'] = $leadResponse['records'][0]['Id'];
+                                            $bancaEticaSalesforceClient->actualizarLead($lead);
                                         } else {
-                                            $addLeadResponse = Forrest::sobjects('Lead',[
-                                                'method' => 'post',
-                                                'body'   => [
-                                                    'FirstName' => $configuraciones['salesforce_default_firstname'],
-                                                    'LastName' => $configuraciones['salesforce_default_lastname'],
-                                                    'DNI__c' => $rutProveedor,
-                                                    'Company' => $nombreProveedor,
-                                                    'Address__c' => '',
-                                                    'Area__c' => $licitacion['area'],
-                                                    'Industry' => $licitacion['sector']
-                                                ]
-                                            ]);
-                
+                                            $lead['nombre'] = $configuraciones['salesforce_default_firstname'];
+                                            $lead['apellido'] = $configuraciones['salesforce_default_lastname'];
+                                            $lead['direccion'] = '';
+
+                                            $addLeadResponse = $bancaEticaSalesforceClient->agregarLead($lead);
                                             $leadId = $addLeadResponse['id'];
                                         }
                                     }
 
-                                    Forrest::sobjects('BiographicalEvent__c',[
-                                        'method' => 'post',
-                                        'body'   => [
-                                            'BidId__c' => $licitacion['CodigoExterno'],
-                                            'BidName__c' => $licitacion['Nombre'],
-                                            'Description__c' => $licitacion['Descripcion'],
-                                            'BidAmount__c' => $licitacion['MontoEstimado'],
-                                            'BidType__c' => $licitacion['Tipo'],
-                                            'BidOrganization__c' => $licitacion['Comprador']['NombreOrganismo'],
-                                            'Lead__c' => $leadId,
-                                            'Account__c' => $accountId,
-                                            'RecordTypeId' => $configuraciones['salesforce_record_type_id'],
-                                            'Date__c' => Carbon::parse($licitacion['Adjudicacion']['Fecha'])->format('Y-m-d'),
-                                            'BidAmount__c' => $item['Adjudicacion']['Cantidad'] * $item['Adjudicacion']['MontoUnitario'],
-                                            'Name' => $configuraciones['salesforce_default_biographical_event_name']
-                                        ]
-                                    ]);
+                                    $eventoBiografico = [
+                                        'codigo' => $licitacion['CodigoExterno'],
+                                        'nombre' => $licitacion['Nombre'],
+                                        'descripcion' => $licitacion['Descripcion'],
+                                        'tipo' => $licitacion['Tipo'],
+                                        'organismo' => $licitacion['Comprador']['NombreOrganismo'],
+                                        'leadId' => $lead['id'],
+                                        'accountId' => $account['id'],
+                                        'recordTypeId' => $configuraciones['salesforce_record_type_id'],
+                                        'fecha' => $licitacion['Adjudicacion']['Fecha'],
+                                        'monto' => $item['Adjudicacion']['Cantidad'] * $item['Adjudicacion']['MontoUnitario'],
+                                        'nombreEvento' => $configuraciones['salesforce_default_biographical_event_name']
+                                    ];
+
+                                    $bancaEticaSalesforceClient->agregarEventoBiografico($eventoBiografico);
                                 } 
                             }
                         }
-                        
 
                         $licitacionesProcesadas[] = $licitacion;
                     }
@@ -233,6 +221,8 @@ class MercadoPublicoETL {
     }
 
     function obtenerConfiguraciones($sendToSalesforce) {
+        // TODO: Refactorizar
+
         $settings = app(GeneralSettings::class);
 
         $configuraciones = [];
@@ -240,7 +230,6 @@ class MercadoPublicoETL {
         $configuraciones['url'] = $settings->mercado_publico_url_licitaciones;
         $configuraciones['retry'] = $settings->mercado_publico_retry;
         $configuraciones['fecha'] = Carbon::yesterday()->format('dmY');
-        $configuraciones['fecha'] = '07032021';
         $configuraciones['salesforce_record_type_id'] = $settings->mercado_publico_salesforce_record_type_id;
         $configuraciones['salesforce_default_firstname'] = $settings->mercado_publico_salesforce_default_firstname;
         $configuraciones['salesforce_default_lastname'] = $settings->mercado_publico_salesforce_default_lastname;

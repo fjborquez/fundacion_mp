@@ -16,8 +16,6 @@ use App\Http\Controllers\MercadoPublicoController;
 */
 
 Route::post('/tokens/create', 'App\Http\Controllers\TokenController@create');
-Route::get('/mercado-publico', 'App\Http\Controllers\MercadoPublicoController@index');
-
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/usuarios', 'App\Http\Controllers\UserController@index');
@@ -26,4 +24,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/usuarios/{id}', 'App\Http\Controllers\UserController@update');
     Route::delete('/usuarios/{id}', 'App\Http\Controllers\UserController@delete');
 
+    Route::get('/mercado-publico', 'App\Http\Controllers\MercadoPublicoController@index');
 });
