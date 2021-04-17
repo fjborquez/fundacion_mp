@@ -4,7 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use App\GeneralSettings;
+use App\Services\MercadoPublico\Settings\EtlSettings;
 
 class Kernel extends ConsoleKernel
 {
@@ -26,8 +26,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-        $settings = app(GeneralSettings::class);
-        $schedule->command('mpetl:generar --sendToSalesforce')->cron($settings->mercado_publico_cron_tarea_automatica);
+        $etlSettings = app(EtlSettings::class);
+        $schedule->command('mpetl:generar --sendToSalesforce')->cron($etlSettings->cron_tarea_automatica);
     }
 
     /**

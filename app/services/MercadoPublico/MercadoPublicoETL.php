@@ -4,7 +4,9 @@ namespace App\Services\MercadoPublico;
 
 use App\Services\MercadoPublico\Clients\MercadoPublicoHttpClient;
 use App\Services\MercadoPublico\Clients\BancaEticaSalesforceClient;
-use App\GeneralSettings;
+use App\Services\MercadoPublico\Settings\SalesforceSettings;
+use App\Services\MercadoPublico\Settings\EtlSettings;
+
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use BenTools\ETL\Etl;
@@ -20,8 +22,17 @@ use RuntimeException;
 use Exception;
 
 class MercadoPublicoETL {
+    private $salesforceSettings;
+    private $etlSettings;
+
+    function __construct() {
+        $this->salesforceSettings = app(SalesforceSettings::class);
+        $this->etlSettings = app(EtlSettings::class);
+    }
+
     public function generarETL($sendToSalesforce = false) {
         $licitaciones = [];
+        // TODO: Externalizar bloqueo
         $fp = fopen(storage_path('framework/locks/etlmp.txt'), "r+");
         
         $this->bloquear($fp);
@@ -36,13 +47,14 @@ class MercadoPublicoETL {
 
         $licitacionesProcesadas = [];
         $configuraciones = $this->obtenerConfiguraciones($sendToSalesforce);
-        $mercadoPublicoHttpClient = new MercadoPublicoHttpClient($configuraciones);
+        $mercadoPublicoHttpClient = new MercadoPublicoHttpClient();
         $licitaciones = $mercadoPublicoHttpClient->obtenerLicitacionesConDetalles($configuraciones['fecha']);
 
         if ($configuraciones['sendToSalesforce']) {
             Log::info('Se enviaran licitaciones a Salesforce.');
         }
 
+        // TODO: Refactorizar funciones de etl
         $etl = EtlBuilder::init()
             ->transformWith(function($item) {
                 array_walk_recursive($item, function (&$value) {
@@ -54,7 +66,7 @@ class MercadoPublicoETL {
             ->loadInto(
                 function ($generated, $key, Etl $etl) use (&$licitacionesProcesadas, $configuraciones) {
                     $listasPalabras = $configuraciones['listasPalabras'];
-                    $bancaEticaSalesforceClient = new BancaEticaSalesforceClient($configuraciones);
+                    $bancaEticaSalesforceClient = new BancaEticaSalesforceClient();
 
                     foreach ($generated as $licitacion) {
                         if (!Arr::exists($licitacion, 'Adjudicacion') || $licitacion['Adjudicacion'] == null) {
@@ -175,8 +187,8 @@ class MercadoPublicoETL {
                                             $lead['id'] = $leadResponse['records'][0]['Id'];
                                             $bancaEticaSalesforceClient->actualizarLead($lead);
                                         } else {
-                                            $lead['nombre'] = $configuraciones['salesforce_default_firstname'];
-                                            $lead['apellido'] = $configuraciones['salesforce_default_lastname'];
+                                            $lead['nombre'] = $this->salesforceSettings->default_firstname;
+                                            $lead['apellido'] = $this->salesforceSettings->default_lastname;
                                             $lead['direccion'] = '';
 
                                             $addLeadResponse = $bancaEticaSalesforceClient->agregarLead($lead);
@@ -192,10 +204,10 @@ class MercadoPublicoETL {
                                         'organismo' => $licitacion['Comprador']['NombreOrganismo'],
                                         'leadId' => $lead['id'],
                                         'accountId' => $account['id'],
-                                        'recordTypeId' => $configuraciones['salesforce_record_type_id'],
+                                        'recordTypeId' => $this->salesforceSettings->record_type_id,
                                         'fecha' => $licitacion['Adjudicacion']['Fecha'],
                                         'monto' => $item['Adjudicacion']['Cantidad'] * $item['Adjudicacion']['MontoUnitario'],
-                                        'nombreEvento' => $configuraciones['salesforce_default_biographical_event_name']
+                                        'nombreEvento' => $this->salesforceSettings->default_biographical_event_name
                                     ];
 
                                     $bancaEticaSalesforceClient->agregarEventoBiografico($eventoBiografico);
@@ -221,43 +233,29 @@ class MercadoPublicoETL {
     }
 
     function obtenerConfiguraciones($sendToSalesforce) {
-        // TODO: Refactorizar
-
-        $settings = app(GeneralSettings::class);
-
         $configuraciones = [];
-        $configuraciones['ticket'] = $settings->mercado_publico_ticket;
-        $configuraciones['url'] = $settings->mercado_publico_url_licitaciones;
-        $configuraciones['retry'] = $settings->mercado_publico_retry;
-        $configuraciones['fecha'] = Carbon::yesterday()->format('dmY');
-        $configuraciones['salesforce_record_type_id'] = $settings->mercado_publico_salesforce_record_type_id;
-        $configuraciones['salesforce_default_firstname'] = $settings->mercado_publico_salesforce_default_firstname;
-        $configuraciones['salesforce_default_lastname'] = $settings->mercado_publico_salesforce_default_lastname;
-        $configuraciones['salesforce_default_biographical_event_name'] = $settings->mercado_publico_salesforce_default_biographical_event_name;
-        $configuraciones['segundos_entre_consultas'] = $settings->mercado_publico_segundos_entre_consultas * 1;
-        $configuraciones['milisegundos_entre_consultas'] = $settings->mercado_publico_segundos_entre_consultas * 1000;
         $configuraciones['sendToSalesforce'] = boolval($sendToSalesforce);
+        $configuraciones['fecha'] = Carbon::yesterday()->format('dmY');
 
-
-        $listaTipoLicitacionPermitidos = explode(';', $settings->mercado_publico_filtro_tipo_licitacion);
-        $listaPalabrasExcluidas = explode(';', $settings->mercado_publico_filtro_palabras_excluidas);
-        $listaPalabrasClaveEducacion = explode(';', $settings->mercado_publico_filtro_palabras_clave_educacion);
-        $listaPalabrasClaveIndustriaCreativa = explode(';', $settings->mercado_publico_filtro_palabras_clave_industria_creativa);
-        $listaPalabrasClaveTurismo = explode(';', $settings->mercado_publico_filtro_palabras_clave_turismo);
-        $listaPalabrasClaveEspacioPublico = explode(';', $settings->mercado_publico_filtro_palabras_clave_espacio_publico);
-        $listaPalabrasClaveDiseño = explode(';', $settings->mercado_publico_filtro_palabras_clave_diseño);
-        $listaPalabrasClaveVialidad = explode(';', $settings->mercado_publico_filtro_palabras_clave_vialidad);
-        $listaPalabrasClaveObrasPublicas = explode(';', $settings->mercado_publico_filtro_palabras_clave_obras_publicas);
-        $listaPalabrasClaveSalud = explode(';', $settings->mercado_publico_filtro_palabras_clave_salud);
-        $listaPalabrasClaveInclusion = explode(';', $settings->mercado_publico_filtro_palabras_clave_inclusion);
-        $listaPalabrasClaveAgua = explode(';', $settings->mercado_publico_filtro_palabras_clave_agua);
-        $listaPalabrasClaveApr = explode(';', $settings->mercado_publico_filtro_palabras_clave_apr);
-        $listaPalabrasClaveSistemasAlimentarios = explode(';', $settings->mercado_publico_filtro_palabras_clave_sistemas_alimentarios);
-        $listaPalabrasClaveProduccionSostenible = explode(';', $settings->mercado_publico_filtro_palabras_clave_produccion_sostenible);
-        $listaPalabrasClaveEficienciaEnergetica = explode(';', $settings->mercado_publico_filtro_palabras_clave_eficiencia_energetica);
-        $listaPalabrasExcluidasEducacionYCultura = explode(';', $settings->mercado_publico_filtro_palabras_excluidas_educacion_y_cultura);
-        $listaPalabrasExcluidasDesarrolloSocial = explode(';', $settings->mercado_publico_filtro_palabras_excluidas_desarrollo_social);
-        $listaPalabrasExcluidasMedioAmbiente = explode(';', $settings->mercado_publico_filtro_palabras_excluidas_medio_ambiente);
+        $listaTipoLicitacionPermitidos = explode(';', $this->etlSettings->filtro_tipo_licitacion);
+        $listaPalabrasExcluidas = explode(';', $this->etlSettings->filtro_palabras_excluidas);
+        $listaPalabrasClaveEducacion = explode(';', $this->etlSettings->filtro_palabras_clave_educacion);
+        $listaPalabrasClaveIndustriaCreativa = explode(';', $this->etlSettings->filtro_palabras_clave_industria_creativa);
+        $listaPalabrasClaveTurismo = explode(';', $this->etlSettings->filtro_palabras_clave_turismo);
+        $listaPalabrasClaveEspacioPublico = explode(';', $this->etlSettings->filtro_palabras_clave_espacio_publico);
+        $listaPalabrasClaveDiseño = explode(';', $this->etlSettings->filtro_palabras_clave_diseño);
+        $listaPalabrasClaveVialidad = explode(';', $this->etlSettings->filtro_palabras_clave_vialidad);
+        $listaPalabrasClaveObrasPublicas = explode(';', $this->etlSettings->filtro_palabras_clave_obras_publicas);
+        $listaPalabrasClaveSalud = explode(';', $this->etlSettings->filtro_palabras_clave_salud);
+        $listaPalabrasClaveInclusion = explode(';', $this->etlSettings->filtro_palabras_clave_inclusion);
+        $listaPalabrasClaveAgua = explode(';', $this->etlSettings->filtro_palabras_clave_agua);
+        $listaPalabrasClaveApr = explode(';', $this->etlSettings->filtro_palabras_clave_apr);
+        $listaPalabrasClaveSistemasAlimentarios = explode(';', $this->etlSettings->filtro_palabras_clave_sistemas_alimentarios);
+        $listaPalabrasClaveProduccionSostenible = explode(';', $this->etlSettings->filtro_palabras_clave_produccion_sostenible);
+        $listaPalabrasClaveEficienciaEnergetica = explode(';', $this->etlSettings->filtro_palabras_clave_eficiencia_energetica);
+        $listaPalabrasExcluidasEducacionYCultura = explode(';', $this->etlSettings->filtro_palabras_excluidas_educacion_y_cultura);
+        $listaPalabrasExcluidasDesarrolloSocial = explode(';', $this->etlSettings->filtro_palabras_excluidas_desarrollo_social);
+        $listaPalabrasExcluidasMedioAmbiente = explode(';', $this->etlSettings->filtro_palabras_excluidas_medio_ambiente);
 
         $configuraciones['listasPalabras'] = [
             'listaTipoLicitacionPermitidos' => $listaTipoLicitacionPermitidos,

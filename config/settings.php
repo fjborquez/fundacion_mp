@@ -7,7 +7,9 @@ return [
      * put them (manually) here.
      */
     'settings' => [
-        GeneralSettings::class
+        App\Services\MercadoPublico\Settings\EtlSettings::class,
+        App\Services\MercadoPublico\Settings\MercadoPublicoSettings::class,
+        App\Services\MercadoPublico\Settings\SalesforceSettings::class
     ],
 
     /*

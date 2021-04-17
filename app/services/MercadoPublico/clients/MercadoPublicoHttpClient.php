@@ -2,16 +2,17 @@
 
 namespace App\Services\MercadoPublico\Clients;
 
+use App\Services\MercadoPublico\Settings\MercadoPublicoSettings;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use DomainException;
 use Exception;
 
 class MercadoPublicoHttpClient {
-    private $configuraciones;
+    private $settings;
 
-    function __construct($configuraciones) {
-        $this->configuraciones = $configuraciones;
+    function __construct() {
+        $this->settings = app(MercadoPublicoSettings::class);
     }
 
     function obtenerLicitacionesConDetalles($fecha) {
@@ -19,7 +20,7 @@ class MercadoPublicoHttpClient {
         $listaLicitaciones = $this->obtenerListaLicitaciones($fecha);
 
         foreach($listaLicitaciones as $licitacionEnLista) {
-            sleep($this->configuraciones['segundos_entre_consultas']);
+            sleep($this->settings->segundos_entre_consultas);
 
             try {
                 $licitacionesConDetalles[] = $this->obtenerDetalleLicitacion($licitacionEnLista['CodigoExterno']);
@@ -35,9 +36,9 @@ class MercadoPublicoHttpClient {
     
     // Obtener listado de licitaciones sin detalles
     function obtenerListaLicitaciones($fecha) {
-        $response = Http::retry($this->configuraciones['retry'], $this->configuraciones['milisegundos_entre_consultas'])->get($this->configuraciones['url'], [
+        $response = Http::retry($this->settings->retry, $this->settings->milisegundos_entre_consultas)->get($this->settings->url_licitaciones, [
             'fecha' => $fecha,
-            'ticket' => $this->configuraciones['ticket']
+            'ticket' => $this->settings->ticket
         ]);
 
         if (!$response->successful()) {
@@ -57,8 +58,8 @@ class MercadoPublicoHttpClient {
 
     // Obtener detalles de una licitación
     function obtenerDetalleLicitacion($codigoExterno) {
-        $response = Http::retry($this->configuraciones['retry'], $this->configuraciones['milisegundos_entre_consultas'])->get($this->configuraciones['url'], [
-            'ticket' => $this->configuraciones['ticket'],
+        $response = Http::retry($this->settings->retry, $this->settings->milisegundos_entre_consultas)->get($this->settings->url_licitaciones, [
+            'ticket' => $this->settings->ticket,
             'codigo' => $codigoExterno
         ]);
 
