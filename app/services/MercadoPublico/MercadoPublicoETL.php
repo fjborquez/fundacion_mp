@@ -3,7 +3,8 @@
 namespace App\Services\MercadoPublico;
 
 use App\Services\MercadoPublico\Clients\MercadoPublicoHttpClient;
-use App\Services\MercadoPublico\Etl\EtlHelper;
+use App\Services\MercadoPublico\Helpers\EtlHelper;
+use App\Services\MercadoPublico\Helpers\SalesforceHelper;
 use App\Services\MercadoPublico\Mutex\Mutex;
 
 use Carbon\Carbon;
@@ -21,10 +22,12 @@ use DomainException;
 class MercadoPublicoETL {
     private $etlHelper;
     private $mutex;
+    private $salesforceHelper;
 
     public function __construct() {
         $this->etlHelper = new EtlHelper();
         $this->mutex = new Mutex();
+        $this->salesforceHelper = new SalesforceHelper();
     }
 
     public function generarETL($sendToSalesforce = false) {
@@ -82,7 +85,7 @@ class MercadoPublicoETL {
                         }
 
                         if ($sendToSalesforce) {
-                            $this->etlHelper->enviarAdjudicacionesASalesforce($licitacion);
+                            $this->salesforceHelper->enviarAdjudicacionesASalesforce($licitacion);
                         }
 
                         $licitacionesProcesadas[] = $licitacion;
