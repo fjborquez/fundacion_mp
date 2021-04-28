@@ -18,14 +18,4 @@ class MercadoPublicoETLServiceProvider extends ServiceProvider
             return new MercadoPublicoETL();
         });
     }
-
-    /**
-     * Bootstrap services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        //
-    }
 }

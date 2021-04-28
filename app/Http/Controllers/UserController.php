@@ -28,9 +28,8 @@ class UserController extends Controller
 
         $data = $request->only(['password', 'email', 'name']);
         $data['password'] = Hash::make($data['password']);
-        $user = User::create($data);
 
-        return $user;
+        return User::create($data);
     }
 
     public function update(Request $request, $id)

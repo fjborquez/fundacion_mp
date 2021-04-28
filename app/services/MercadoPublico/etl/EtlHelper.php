@@ -16,13 +16,13 @@ class EtlHelper {
     private $etlSettings;
     private $listasPalabras;
 
-    function __construct() {
+    public function __construct() {
         $this->salesforceSettings = app(SalesforceSettings::class);
         $this->etlSettings = app(EtlSettings::class);
         $this->listasPalabras = $this->generarListasPalabras();
     }
 
-    function generarListasPalabras() {
+    public function generarListasPalabras() {
         $listaTipoLicitacionPermitidos = explode(';', $this->etlSettings->filtro_tipo_licitacion);
         $listaPalabrasExcluidas = explode(';', $this->etlSettings->filtro_palabras_excluidas);
         $listaPalabrasClaveEducacion = explode(';', $this->etlSettings->filtro_palabras_clave_educacion);
@@ -66,8 +66,8 @@ class EtlHelper {
         ];
     }
 
-    function isFormatoLicitacionValido($licitacion) {
-        if (!Arr::exists($licitacion, 'Adjudicacion') || $licitacion['Adjudicacion'] == null) {
+    public function isFormatoLicitacionValido($licitacion) {
+        if (!Arr::exists($licitacion, 'Adjudicacion') || $licitacion['Adjudicacion'] === null) {
             return false;
         }
 
@@ -78,7 +78,7 @@ class EtlHelper {
         return true;
     }
 
-    function filtrarPorTipoLicitacion($licitacion) {
+    public function filtrarPorTipoLicitacion($licitacion) {
         if (!in_array($licitacion['Tipo'], $this->listasPalabras['listaTipoLicitacionPermitidos'])) {
             return false;
         }
@@ -86,7 +86,7 @@ class EtlHelper {
         return true;
     }
 
-    function filtrarPorPalabrasExcluidasNombreLicitacion($licitacion) {
+    public function filtrarPorPalabrasExcluidasNombreLicitacion($licitacion) {
         if (Str::of($licitacion['Nombre'])->contains($this->listasPalabras['listaPalabrasExcluidas'])) {
             return false;
         }
@@ -94,7 +94,7 @@ class EtlHelper {
         return true;
     }
 
-    function categorizarLicitacion(&$licitacion) {
+    public function categorizarLicitacion(&$licitacion) {
         // TODO: Pasar textos de area/sector a constante u otro
         if (Str::of($licitacion['Nombre'])->contains($this->listasPalabras['educacion'])) {
             $licitacion['area'] = 'educación y cultura';
@@ -145,27 +145,28 @@ class EtlHelper {
         return true;
     }
 
-    function filtrarPorNombreLicitacionExcluidosCategoria($licitacion) {
+    public function filtrarPorNombreLicitacionExcluidosCategoria($licitacion) {
         // TODO: Pasar textos de area/sector a constante u otro
-        if ($licitacion['area'] == 'educación y cultura' 
+        $tieneCategoria = true;
+        if ($licitacion['area'] === 'educación y cultura' 
             && Str::of($licitacion['Nombre'])->contains($this->listasPalabras['excluidasEducacionYCultura'])) {
-            return false;
+            $tieneCategoria = false;
         }
 
-        if ($licitacion['area'] == 'desarrollo social' 
+        if ($licitacion['area'] === 'desarrollo social' 
             && Str::of($licitacion['Nombre'])->contains($this->listasPalabras['excluidasDesarrolloSocial'])) {
-            return false;
+            $tieneCategoria = false;
         }
 
-        if ($licitacion['area'] == 'medio ambiente' 
+        if ($licitacion['area'] === 'medio ambiente' 
             && Str::of($licitacion['Nombre'])->contains($this->listasPalabras['excluidasMedioAmbiente'])) {
-            return false;
+            $tieneCategoria = false;
         }
 
-        return true;
+        return $tieneCategoria;
     }
 
-    function enviarAdjudicacionesASalesforce($licitacion) {
+    public function enviarAdjudicacionesASalesforce($licitacion) {
         foreach($licitacion['Items']['Listado'] as $item) {
             try {
                 if (!Arr::exists($item, 'Adjudicacion')) {
@@ -173,13 +174,13 @@ class EtlHelper {
                 }
     
                 $this->enviarAdjudicacionASalesforce($licitacion, $item['Adjudicacion']);
-            } catch (Exception $e) {
-                Log::notice('Ha ocurrido un problema al intentar enviar a Salesforce adjudicacion ' . $item['Correlativo'] . ' de la licitacion ' . $licitacion['CodigoExterno'] . ': ' . $e->getMessage());
+            } catch (Exception $exception) {
+                Log::notice('Ha ocurrido un problema al intentar enviar a Salesforce adjudicacion ' . $item['Correlativo'] . ' de la licitacion ' . $licitacion['CodigoExterno'] . ': ' . $exception->getMessage());
             }
         }
     }
 
-    function enviarAdjudicacionASalesforce($licitacion, $adjudicacion) {
+    public function enviarAdjudicacionASalesforce($licitacion, $adjudicacion) {
         if (!is_array($adjudicacion)) {
             throw new DomainException('La adjudicacion no cumple formato para envio a Salesforce');
         }
@@ -191,8 +192,13 @@ class EtlHelper {
         $bancaEticaSalesforceClient = new BancaEticaSalesforceClient();
         $accountResponse = $bancaEticaSalesforceClient->obtenerAccountPorRut($rutProveedor);
 
-        $account['id'] = '';
-        $lead['id'] = '';
+        $account = [
+            'id' => ''
+        ];
+        
+        $lead = [
+            'id' => ''
+        ];
 
         if ($accountResponse['totalSize'] > 0) {
             $account = [
@@ -221,7 +227,7 @@ class EtlHelper {
                 $lead['direccion'] = '';
 
                 $addLeadResponse = $bancaEticaSalesforceClient->agregarLead($lead);
-                $leadId = $addLeadResponse['id'];
+                $lead['id'] = $addLeadResponse['id'];
             }
         }
 

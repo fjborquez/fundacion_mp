@@ -19,18 +19,18 @@ use DomainException;
 class MercadoPublicoETL {
     private $etlHelper;
 
-    function __construct() {
+    public function __construct() {
         $this->etlHelper = new EtlHelper();
     }
 
     public function generarETL($sendToSalesforce = false) {
         $licitaciones = [];
         // TODO: Externalizar bloqueo
-        $fp = fopen(storage_path('framework/locks/etlmp.txt'), "r+");
+        $file = fopen(storage_path('framework/locks/etlmp.txt'), "r+");
         
-        $this->bloquear($fp);
+        $this->bloquear($file);
         $licitaciones = $this->ejecutar(boolval($sendToSalesforce));
-        $this->desbloquear($fp);
+        $this->desbloquear($file);
         
         return $licitaciones;
     }
@@ -43,9 +43,7 @@ class MercadoPublicoETL {
         $fecha = Carbon::yesterday()->format('dmY');
         $licitaciones = $mercadoPublicoHttpClient->obtenerLicitacionesConDetalles($fecha);
         
-        if ($sendToSalesforce) {
-            Log::info('Se enviaran licitaciones a Salesforce.');
-        }
+        Log::info('Enviar licitaciones a Salesforce: ' . var_export($sendToSalesforce, true));
 
         // TODO: Refactorizar funciones de etl
         $etl = EtlBuilder::init()
@@ -93,9 +91,9 @@ class MercadoPublicoETL {
             ->onEnd(function(EndProcessEvent $event) use (&$licitacionesProcesadas) {
                 Log::info('Ha concluido la ETL con ' . count($licitacionesProcesadas) . ' licitaciones filtradas.');
             })
-            ->onLoadException(function(ItemExceptionEvent $e) {
-                Log::error('Ha ocurrido un error al procesar licitacion ' . $e->getItem()['CodigoExterno'] . ': ' .$e->getException()->getMessage());
-                $e->ignoreException();
+            ->onLoadException(function(ItemExceptionEvent $exception) {
+                Log::error('Ha ocurrido un error al procesar licitacion ' . $exception->getItem()['CodigoExterno'] . ': ' . $exception->getException()->getMessage());
+                $exception->ignoreException();
             })
             ->createEtl();
 
@@ -105,15 +103,15 @@ class MercadoPublicoETL {
     }
 
     // FUNCIONES DE MUTEX
-    private function bloquear($fp) {
-        if (!flock($fp, LOCK_EX | LOCK_NB)) {
-            fclose($fp);
+    private function bloquear($file) {
+        if (!flock($file, LOCK_EX | LOCK_NB)) {
+            fclose($file);
             throw new RuntimeException('Una ejecución del proceso ya está en curso');
         }
     }
 
-    private function desbloquear($fp) {
-        flock($fp, LOCK_UN);
-        fclose($fp);
+    private function desbloquear($file) {
+        flock($file, LOCK_UN);
+        fclose($file);
     }
 }
