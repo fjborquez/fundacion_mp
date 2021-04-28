@@ -66,16 +66,16 @@ class EtlHelper {
         ];
     }
 
-    public function isFormatoLicitacionValido($licitacion) {
+    public function comprobarFormatoLicitacionValido($licitacion) {
         if (!Arr::exists($licitacion, 'Adjudicacion') || $licitacion['Adjudicacion'] === null) {
-            return false;
+            return;
         }
 
         if (!Arr::exists($licitacion, 'Items') || empty($licitacion['Items'])) {
-            return false;
+            return;
         }
 
-        return true;
+        throw new DomainException('La licitación no cumple con el formato valido para la ETL.');
     }
 
     public function filtrarPorTipoLicitacion($licitacion) {

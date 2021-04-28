@@ -4,6 +4,8 @@ namespace App\Services\MercadoPublico;
 
 use App\Services\MercadoPublico\Clients\MercadoPublicoHttpClient;
 use App\Services\MercadoPublico\Etl\EtlHelper;
+use App\Services\MercadoPublico\Mutex\Mutex;
+
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -18,19 +20,19 @@ use DomainException;
 
 class MercadoPublicoETL {
     private $etlHelper;
+    private $mutex;
 
     public function __construct() {
         $this->etlHelper = new EtlHelper();
+        $this->mutex = new Mutex();
     }
 
     public function generarETL($sendToSalesforce = false) {
         $licitaciones = [];
-        // TODO: Externalizar bloqueo
-        $file = fopen(storage_path('framework/locks/etlmp.txt'), "r+");
         
-        $this->bloquear($file);
+        $this->mutex->bloquear();
         $licitaciones = $this->ejecutar(boolval($sendToSalesforce));
-        $this->desbloquear($file);
+        $this->mutex->desbloquear();
         
         return $licitaciones;
     }
@@ -57,9 +59,7 @@ class MercadoPublicoETL {
             ->loadInto(
                 function ($generated, $key, Etl $etl) use (&$licitacionesProcesadas, $sendToSalesforce) {
                     foreach ($generated as $licitacion) {
-                        if (!$this->etlHelper->isFormatoLicitacionValido($licitacion)) {
-                            throw new DomainException('La licitación no cumple con el formato valido para la ETL.');
-                        }
+                        $this->etlHelper->comprobarFormatoLicitacionValido($licitacion);
 
                         if (!$this->etlHelper->filtrarPorTipoLicitacion($licitacion)) {
                             $etl->skipCurrentItem();
@@ -100,18 +100,5 @@ class MercadoPublicoETL {
         $etl->process($licitaciones);
         
         return $licitacionesProcesadas;
-    }
-
-    // FUNCIONES DE MUTEX
-    private function bloquear($file) {
-        if (!flock($file, LOCK_EX | LOCK_NB)) {
-            fclose($file);
-            throw new RuntimeException('Una ejecución del proceso ya está en curso');
-        }
-    }
-
-    private function desbloquear($file) {
-        flock($file, LOCK_UN);
-        fclose($file);
     }
 }
