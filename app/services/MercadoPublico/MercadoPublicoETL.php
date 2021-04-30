@@ -79,7 +79,7 @@ class MercadoPublicoETL {
                             break;
                         }
 
-                        if (!$this->etlHelper->filtrarPorNombreLicitacionExcluidosCategoria($licitacion)) {
+                        if ($this->etlHelper->filtrarPorNombreLicitacionExcluidosCategoria($licitacion)) {
                             $etl->skipCurrentItem();
                             break;
                         }
