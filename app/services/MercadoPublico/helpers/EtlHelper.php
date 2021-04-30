@@ -136,8 +136,7 @@ class EtlHelper {
                 return true;
             }
         }
-        
 
-        return $tieneCategoria;
+        return false;
     }
 }
