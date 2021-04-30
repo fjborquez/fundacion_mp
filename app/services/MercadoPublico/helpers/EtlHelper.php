@@ -33,22 +33,6 @@ class EtlHelper {
         throw new DomainException('La licitación no cumple con el formato valido para la ETL.');
     }
 
-    public function filtrarPorTipoLicitacion($licitacion) {
-        if (!in_array($licitacion['Tipo'], $this->listasPalabras['listaTipoLicitacionPermitidos'])) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public function filtrarPorPalabrasExcluidasNombreLicitacion($licitacion) {
-        if (Str::of($licitacion['Nombre'])->contains($this->listasPalabras['listaPalabrasExcluidas'])) {
-            return false;
-        }
-
-        return true;
-    }
-
     public function categorizarLicitacion(&$licitacion) {
         // TODO: Pasar textos de area/sector a constante u otro
         $categorias = [
@@ -122,21 +106,12 @@ class EtlHelper {
         return false;
     }
 
-    public function filtrarPorNombreLicitacionExcluidosCategoria($licitacion) {
-        // TODO: Pasar textos de area/sector a constante u otro
-        $exclusiones = [
-            'educación y cultura' => 'excluidasEducacionYCultura',
-            'desarrollo social' => 'excluidasDesarrolloSocial',
-            'medio ambiente' => 'excluidasMedioAmbiente'
-        ];
-
-        foreach ($exclusiones as $index => $excluidas) {
-            if ($licitacion['area'] === $index 
-                && Str::of($licitacion['Nombre'])->contains($this->listasPalabras[$excluidas])) {
-                return true;
+    public function aplicarFiltros($licitacion, $filtros, $etl) {
+        foreach($filtros as $filtro) {
+            if (!$filtro->filtrar($licitacion)) {
+                $etl->skipCurrentItem();
+                throw new RuntimeException('Licitacion no supera filtro');
             }
         }
-
-        return false;
     }
 }

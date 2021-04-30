@@ -6,6 +6,9 @@ use App\Services\MercadoPublico\Clients\MercadoPublicoHttpClient;
 use App\Services\MercadoPublico\Helpers\EtlHelper;
 use App\Services\MercadoPublico\Helpers\SalesforceHelper;
 use App\Services\MercadoPublico\Mutex\Mutex;
+use App\Services\MercadoPublico\Filtros\FiltroTipoLicitacion;
+use App\Services\MercadoPublico\Filtros\FiltroPalabraExcluidasNombreLicitacion;
+use App\Services\MercadoPublico\Filtros\FiltroNombreLicitacionExcluidosCategoria;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -23,11 +26,21 @@ class MercadoPublicoETL {
     private $etlHelper;
     private $mutex;
     private $salesforceHelper;
+    private $filtros;
 
     public function __construct() {
         $this->etlHelper = new EtlHelper();
         $this->mutex = new Mutex();
         $this->salesforceHelper = new SalesforceHelper();
+        $this->filtros = [
+            'precategorizacion' => [
+                new FiltroTipoLicitacion(),
+                new FiltroPalabraExcluidasNombreLicitacion(),
+            ],
+            'postcategorizacion' => [
+                new FiltroNombreLicitacionExcluidosCategoria(),
+            ],
+        ];
     }
 
     public function generarETL($sendToSalesforce = false) {
@@ -46,6 +59,7 @@ class MercadoPublicoETL {
         $licitacionesProcesadas = [];
         $mercadoPublicoHttpClient = new MercadoPublicoHttpClient();
         $fecha = Carbon::yesterday()->format('dmY');
+        $fecha = '07032021';
         $licitaciones = $mercadoPublicoHttpClient->obtenerLicitacionesConDetalles($fecha);
         
         Log::info('Enviar licitaciones a Salesforce: ' . var_export($sendToSalesforce, true));
@@ -64,25 +78,14 @@ class MercadoPublicoETL {
                     foreach ($generated as $licitacion) {
                         $this->etlHelper->comprobarFormatoLicitacionValido($licitacion);
 
-                        if (!$this->etlHelper->filtrarPorTipoLicitacion($licitacion)) {
-                            $etl->skipCurrentItem();
-                            break;
-                        }
-
-                        if (!$this->etlHelper->filtrarPorPalabrasExcluidasNombreLicitacion($licitacion)) {
-                            $etl->skipCurrentItem();
-                            break;
-                        }
-
+                        $this->etlHelper->aplicarFiltros($licitacion, $this->filtros['precategorizacion'], $etl);
+                    
                         if (!$this->etlHelper->categorizarLicitacion($licitacion)) {
                             $etl->skipCurrentItem();
                             break;
                         }
-
-                        if ($this->etlHelper->filtrarPorNombreLicitacionExcluidosCategoria($licitacion)) {
-                            $etl->skipCurrentItem();
-                            break;
-                        }
+                        
+                        $this->etlHelper->aplicarFiltros($licitacion, $this->filtros['postcategorizacion'], $etl);
 
                         if ($sendToSalesforce) {
                             $this->salesforceHelper->enviarAdjudicacionesASalesforce($licitacion);
