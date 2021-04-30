@@ -14,5 +14,25 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
+});
+
+Route::get('/login', function () {
+    return view('login');
+});
+
+Route::get('/usuarios', function () {
+    return view('usuarios');
+});
+
+Route::get('/configuraciones', function () {
+    return view('configuraciones');
+});
+
+Route::get('/crearUsuarios', function () {
+    return view('crearUsuarios');
+});
+
+Route::get('/repositorio', function () {
+    return view('repositorio');
 });
