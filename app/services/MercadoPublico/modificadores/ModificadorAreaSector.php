@@ -2,6 +2,7 @@
 
 namespace App\Services\MercadoPublico\Modificadores;
 
+use App\Services\MercadoPublico\Modificadores\Modificador;
 use Illuminate\Support\Str;
 
 class ModificadorAreaSector extends Modificador {

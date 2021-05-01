@@ -2,6 +2,7 @@
 
 namespace App\Services\MercadoPublico\Validadores;
 
+use App\Services\MercadoPublico\Validadores\Validador;
 use Illuminate\Support\Arr;
 
 class ValidadorItems {

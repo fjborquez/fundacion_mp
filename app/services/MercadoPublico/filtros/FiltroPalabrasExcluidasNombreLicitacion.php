@@ -2,6 +2,7 @@
 
 namespace App\Services\MercadoPublico\Filtros;
 
+use App\Services\MercadoPublico\Filtros\Filtro;
 use Illuminate\Support\Str;
 
 class FiltroPalabraExcluidasNombreLicitacion extends Filtro {
