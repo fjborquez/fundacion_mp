@@ -9,6 +9,9 @@ use App\Services\MercadoPublico\Mutex\Mutex;
 use App\Services\MercadoPublico\Filtros\FiltroTipoLicitacion;
 use App\Services\MercadoPublico\Filtros\FiltroPalabraExcluidasNombreLicitacion;
 use App\Services\MercadoPublico\Filtros\FiltroNombreLicitacionExcluidosCategoria;
+use App\Services\MercadoPublico\Modificadores\ModificadorAreaSector;
+use App\Services\MercadoPublico\Validadores\ValidadorAdjudicacion;
+use App\Services\MercadoPublico\Validadores\ValidadorItems;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -27,20 +30,29 @@ class MercadoPublicoETL {
     private $mutex;
     private $salesforceHelper;
     private $filtros;
+    private $modificadores;
 
     public function __construct() {
         $this->etlHelper = new EtlHelper();
         $this->mutex = new Mutex();
         $this->salesforceHelper = new SalesforceHelper();
         $this->filtros = [
-            'precategorizacion' => [
+            'premodificadores' => [
                 new FiltroTipoLicitacion(),
                 new FiltroPalabraExcluidasNombreLicitacion(),
             ],
-            'postcategorizacion' => [
+            'postmodificadores' => [
                 new FiltroNombreLicitacionExcluidosCategoria(),
             ],
         ];
+        $this->modificadores = [
+            new ModificadorAreaSector(),
+        ];
+        $this->validadores = [
+            new ValidadorAdjudicacion(),
+            new ValidadorItems()
+        ];
+
     }
 
     public function generarETL($sendToSalesforce = false) {
@@ -59,6 +71,7 @@ class MercadoPublicoETL {
         $licitacionesProcesadas = [];
         $mercadoPublicoHttpClient = new MercadoPublicoHttpClient();
         $fecha = Carbon::yesterday()->format('dmY');
+        $fecha = '07032021';
         $licitaciones = $mercadoPublicoHttpClient->obtenerLicitacionesConDetalles($fecha);
         
         Log::info('Enviar licitaciones a Salesforce: ' . var_export($sendToSalesforce, true));
@@ -75,16 +88,10 @@ class MercadoPublicoETL {
             ->loadInto(
                 function ($generated, $key, Etl $etl) use (&$licitacionesProcesadas, $sendToSalesforce) {
                     foreach ($generated as $licitacion) {
-                        $this->etlHelper->comprobarFormatoLicitacionValido($licitacion);
-
-                        $this->etlHelper->aplicarFiltros($licitacion, $this->filtros['precategorizacion'], $etl);
-                    
-                        if (!$this->etlHelper->categorizarLicitacion($licitacion)) {
-                            $etl->skipCurrentItem();
-                            break;
-                        }
-                        
-                        $this->etlHelper->aplicarFiltros($licitacion, $this->filtros['postcategorizacion'], $etl);
+                        $this->etlHelper->aplicarValidadores($licitacion, $this->validadores, $etl);
+                        $this->etlHelper->aplicarFiltros($licitacion, $this->filtros['premodificadores'], $etl);
+                        $this->etlHelper->aplicarModificadores($licitacion, $this->modificadores, $etl);
+                        $this->etlHelper->aplicarFiltros($licitacion, $this->filtros['postmodificadores'], $etl);
 
                         if ($sendToSalesforce) {
                             $this->salesforceHelper->enviarAdjudicacionesASalesforce($licitacion);

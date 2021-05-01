@@ -6,7 +6,6 @@ use App\Services\MercadoPublico\Settings\EtlSettings;
 
 class ListasPalabrasHelper {
     private $etlSettings;
-    private $listasPalabras;
 
     public function __construct() {
         $this->etlSettings = app(EtlSettings::class);

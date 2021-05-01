@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Services\MercadoPublico\Filtros;
+namespace App\Services\MercadoPublico\Modificadores;
 
 use App\Services\MercadoPublico\Settings\EtlSettings;
 use App\Services\MercadoPublico\Helpers\ListasPalabrasHelper;
 
-abstract class Filtro {
+abstract class Modificador {
     protected $etlSettings;
     protected $listasPalabras;
     protected $listasPalabrasHelper;
@@ -15,6 +15,6 @@ abstract class Filtro {
         $this->listasPalabrasHelper = new ListasPalabrasHelper();
         $this->listasPalabras = $this->listasPalabrasHelper->generarListasPalabras();
     }
-
-    abstract public function ejecutar($licitacion);
+    
+    abstract public function ejecutar(&$licitacion);
 }

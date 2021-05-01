@@ -5,7 +5,7 @@ namespace App\Services\MercadoPublico\Filtros;
 use Illuminate\Support\Str;
 
 class FiltroNombreLicitacionExcluidosCategoria extends Filtro {
-    public function filtrar($licitacion) {
+    public function ejecutar($licitacion) {
         $exclusiones = [
             'educación y cultura' => 'excluidasEducacionYCultura',
             'desarrollo social' => 'excluidasDesarrolloSocial',
