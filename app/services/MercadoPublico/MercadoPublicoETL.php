@@ -46,7 +46,7 @@ class MercadoPublicoETL {
             ],
         ];
         $this->modificadores = [
-            new ModificadorAreaSector(),
+            //new ModificadorAreaSector(),
         ];
         $this->validadores = [
             new ValidadorAdjudicacion(),
