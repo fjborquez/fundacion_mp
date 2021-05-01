@@ -3,6 +3,10 @@
 namespace App\Services\MercadoPublico\Helpers;
 
 use App\Services\MercadoPublico\Settings\SalesforceSettings;
+use App\Services\MercadoPublico\Clients\BancaEticaSalesforceClient;
+
+use Illuminate\Support\Arr;
+use DomainException;
 
 class SalesforceHelper {
     private $salesforceSettings;
@@ -14,6 +18,7 @@ class SalesforceHelper {
     public function enviarAdjudicacionesASalesforce($licitacion) {
         foreach($licitacion['Items']['Listado'] as $item) {
             try {
+                // TODO: Crear validador
                 if (!Arr::exists($item, 'Adjudicacion')) {
                     throw new DomainException('El Item no cumple formato para envio a Salesforce');
                 }
@@ -26,6 +31,7 @@ class SalesforceHelper {
     }
 
     public function enviarAdjudicacionASalesforce($licitacion, $adjudicacion) {
+        // TODO: Crear validador
         if (!is_array($adjudicacion)) {
             throw new DomainException('La adjudicacion no cumple formato para envio a Salesforce');
         }
