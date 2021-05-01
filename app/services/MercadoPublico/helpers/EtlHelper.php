@@ -4,11 +4,14 @@ namespace App\Services\MercadoPublico\Helpers;
 
 use App\Services\MercadoPublico\Settings\EtlSettings;
 use App\Services\MercadoPublico\Clients\BancaEticaSalesforceClient;
+use App\Services\MercadoPublico\Filtros\FiltroException;
+
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Exception;
 use DomainException;
+use RuntimeException;
 
 class EtlHelper {
     private $etlSettings;
@@ -110,7 +113,7 @@ class EtlHelper {
         foreach($filtros as $filtro) {
             if (!$filtro->filtrar($licitacion)) {
                 $etl->skipCurrentItem();
-                throw new RuntimeException('Licitacion no supera filtro');
+                throw new FiltroException('Licitacion no supera filtro');
             }
         }
     }
