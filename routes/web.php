@@ -13,26 +13,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('home');
-});
+Route::get('/login', 'App\Http\Controllers\AdminLoginController@index')->name('login');
+Route::post('/login', 'App\Http\Controllers\AdminLoginController@login');
 
-Route::get('/login', function () {
-    return view('login');
-});
-
-Route::get('/usuarios', function () {
-    return view('usuarios');
-});
-
-Route::get('/configuraciones', function () {
-    return view('configuraciones');
-});
-
-Route::get('/crearUsuarios', function () {
-    return view('crearUsuarios');
-});
-
-Route::get('/repositorio', function () {
-    return view('repositorio');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/home', 'App\Http\Controllers\AdminHomeController@index')->name('home');
+    Route::get('/usuarios', 'App\Http\Controllers\UserController@show');
+    Route::post('/configuraciones', 'App\Http\Controllers\UserController@store');
+    Route::put('/crearUsuarios', 'App\Http\Controllers\UserController@update');
+    Route::delete('/repositorio', 'App\Http\Controllers\UserController@delete');
 });

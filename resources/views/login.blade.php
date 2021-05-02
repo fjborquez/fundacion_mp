@@ -17,15 +17,16 @@
 
     </head>
     <body class="antialiased text-center">
-        <form class="form-signin">
+        <form class="form-signin" method="post" action="{{ url('/login') }}">
+            {{ csrf_field() }}
             <img src="https://bancaetica.lat/wp-content/uploads/sites/9/2021/01/logo2.png" alt="" class="mb-4 w50">
             <h1 class="h3 mb-3 font-weight-normal">Sistema de Gestión de Información API Mercado Público</h1>
             <label for="inputEmail" class="sr-only">Email address</label>
-            <input type="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
+            <input type="email" id="inputEmail" name="email" class="form-control" placeholder="Email" />
             <label for="inputPassword" class="sr-only">Password</label>
-            <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-            <a class="btn btn-lg btn-primary btn-block" href="{{ url('/') }}" type="submit">Ingresar</a>
-
+            <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" />
+            <input type="hidden" name="device_name" value="site" />
+            <input type="submit" value="Ingresar" class="btn btn-lg btn-primary btn-block" />
         </form>
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
