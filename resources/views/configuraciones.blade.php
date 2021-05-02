@@ -40,7 +40,6 @@
             <a class="nav-link" href="{{ url('/login') }}">Cerrar Sesión</a>
           </li>
         </ul>
-
       </div>
     </nav>
 
@@ -50,29 +49,15 @@
       <h2>Formulario de Configuraciones para Inclusiones/Exclusiones</h2>
       <small>Las palabras deben ir por obligacion separadas por punto y coma (;) y
       todas las palabras en minusculas. Esto para mantener concordancia con la base de datos de mercado publico</small>
-        <form class=" my-4">
-
-            <div class="form-group">
-                <label for="exampleFormControlTextarea1">Palabras Incluidas 1 AREA DESARROLLO SOCIAL</label>
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="exampleFormControlTextarea1">Palabras Incluidas 2 EDUCACION Y CULTURA</label>
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="exampleFormControlTextarea1">Palabras Incluidas 3 NATURALEZA Y MEDIO AMBIENTE</label>
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="exampleFormControlTextarea1">Palabras Excluidas 1</label>
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="exampleFormControlTextarea1">Tipos de Licitacion</label>
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-            </div>
-            <a name="" id="" class="btn btn-primary" href="#" type="submit">GUARDAR CONFIGURACION</a>
+        <form class=" my-4" action="/configuraciones" method="post">
+          <div class="form-group">
+            @foreach ($settings as $settingName => $settingValue)
+            <label for="{{ $settingName }}">{{ ucfirst(str_replace('_', ' ', $settingName)) }}</label>
+            <textarea class="form-control" id="{{ $settingName }}" name="settings[{{ $settingName }}]" rows="3">{{$settingValue}}</textarea>
+            @endforeach
+          </div>
+          {{ csrf_field() }}
+          <input type="submit" class="btn btn-primary" value="GUARDAR CONFIGURACION" />
         </form>
       </div>
 

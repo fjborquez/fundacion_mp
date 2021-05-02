@@ -18,8 +18,9 @@ Route::post('/login', 'App\Http\Controllers\AdminLoginController@login');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', 'App\Http\Controllers\AdminHomeController@index')->name('home');
+    Route::get('/configuraciones', 'App\Http\Controllers\AdminConfiguracionesController@index')->name('configuraciones');
+    Route::post('/configuraciones', 'App\Http\Controllers\AdminConfiguracionesController@store');
     Route::get('/usuarios', 'App\Http\Controllers\UserController@show');
-    Route::post('/configuraciones', 'App\Http\Controllers\UserController@store');
     Route::put('/crearUsuarios', 'App\Http\Controllers\UserController@update');
     Route::delete('/repositorio', 'App\Http\Controllers\UserController@delete');
 });
