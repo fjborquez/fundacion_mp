@@ -59,22 +59,22 @@
                             <th>Nombre</th>
                             <th>Apellido</th>
                             <th>Email</th>
-                            <th>Rol</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @foreach ($usuarios as $usuario)
                         <tr>
-                            <td>1</td>
-                            <td>Mauricio</td>
-                            <td>Lineros</td>
-                            <td>mlineros@dineroyconciencia.org</td>
-                            <td>Administrador</td>
+                            <td>{{ $usuario->id }}</td>
+                            <td>{{ $usuario->name }}</td>
+                            <td>{{ $usuario->lastname }}</td>
+                            <td>{{ $usuario->email }}</td>
                             <td>
-                                <button type="button" class="btn btn-warning btn-sm">Editar</button>
+                                <a href="/modificarUsuarios/{{ $usuario->id }}" class="btn btn-warning btn-sm">Editar</a>
                                 <button type="button" class="btn btn-danger btn-sm">Eliminar</button>
                             </td>
                         </tr>
+                        @endforeach
                     </tbody>
                 </table>
               </div>

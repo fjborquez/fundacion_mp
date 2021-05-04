@@ -20,7 +20,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/home', 'App\Http\Controllers\AdminHomeController@index')->name('home');
     Route::get('/configuraciones', 'App\Http\Controllers\AdminConfiguracionesController@index')->name('configuraciones');
     Route::post('/configuraciones', 'App\Http\Controllers\AdminConfiguracionesController@store');
-    Route::get('/usuarios', 'App\Http\Controllers\UserController@show');
-    Route::put('/crearUsuarios', 'App\Http\Controllers\UserController@update');
+    Route::get('/usuarios', 'App\Http\Controllers\AdminUsuarioController@index');
+    Route::get('/crearUsuarios', 'App\Http\Controllers\AdminUsuarioController@add');
+    Route::post('/crearUsuarios', 'App\Http\Controllers\AdminUsuarioController@store');
+    Route::get('/modificarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@modify');
+    Route::post('/modificarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@update');
     Route::delete('/repositorio', 'App\Http\Controllers\UserController@delete');
 });

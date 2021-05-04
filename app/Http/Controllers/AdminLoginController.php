@@ -15,11 +15,9 @@ class AdminLoginController extends Controller
     }
 
     public function login(Request $request) {
-        $tokenRequest = Request::create('/api/tokens/create', 'POST', $request->only('email', 'password', 'device_name'));
-        $tokenResponse = Route::dispatch($tokenRequest);
         $credentials = $request->only('email', 'password');
 
-        if ($tokenResponse->exception === null && Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials)) {
             return redirect()->intended('home');
         } else {
             // TODO Mensaje de error

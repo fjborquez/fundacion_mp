@@ -48,26 +48,26 @@
 
     <div class="row">
         <div class="col-md-6 offset-md-3">
-        <form>
+        <form action="{{ $formUrl . '/' . $usuario->id }}" method="post">
+            {{ csrf_field() }}
             <div class="form-group">
-                <label for="exampleInputEmail1">Nombre</label>
-                <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                <label for="name">Nombre</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ $usuario->name }}" aria-describedby="emailHelp" />
             </div>
             <div class="form-group">
-                <label for="exampleInputEmail1">Apellidos</label>
-                <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                <label for="lastname">Apellidos</label>
+                <input type="text" class="form-control" id="lastname" name="lastname" value="{{ $usuario->lastname }}" aria-describedby="emailHelp" />
             </div>
             <div class="form-group">
-                <label for="exampleInputEmail1">Email</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ $usuario->email }}" aria-describedby="emailHelp" />
             </div>
             <div class="form-group">
-                <label for="exampleInputPassword1">Password</label>
-                <input type="password" class="form-control" id="exampleInputPassword1">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" value="{{ $usuario->password }}" />
             </div>
-
-            <a type="submit" class="btn btn-success">Guardar Usuario</a>
-            <a type="submit" href="{{ url('/usuarios') }}" class="btn btn-danger">Cancelar</a>
+            <input type="submit" class="btn btn-success" value="Guardar Usuario" />
+            <a href="{{ url('/usuarios') }}" class="btn btn-danger">Cancelar</a>
         </form>
         </div>
     </div>
