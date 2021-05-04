@@ -17,6 +17,7 @@ Route::get('/login', 'App\Http\Controllers\AdminLoginController@index')->name('l
 Route::post('/login', 'App\Http\Controllers\AdminLoginController@login');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/', 'App\Http\Controllers\AdminHomeController@index');
     Route::get('/home', 'App\Http\Controllers\AdminHomeController@index')->name('home');
     Route::get('/configuraciones', 'App\Http\Controllers\AdminConfiguracionesController@index')->name('configuraciones');
     Route::post('/configuraciones', 'App\Http\Controllers\AdminConfiguracionesController@store');
@@ -26,4 +27,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/modificarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@modify');
     Route::post('/modificarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@update');
     Route::delete('/repositorio', 'App\Http\Controllers\UserController@delete');
+    Route::get('/logout', 'App\Http\Controllers\AdminLoginController@logout');
 });

@@ -34,7 +34,7 @@
             <a class="nav-link" href="{{ url('/repositorio') }}">Repositorio</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url('/login') }}">Cerrar Sesión</a>
+            <a class="nav-link" href="{{ url('/logout') }}">Cerrar Sesión</a>
           </li>
         </ul>
 

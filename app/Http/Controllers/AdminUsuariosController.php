@@ -35,7 +35,7 @@ class AdminUsuarioController
         $data = $request->only(['password', 'email', 'name', 'lastname']);
         $data['password'] = Hash::make($data['password']);
         $user = User::create($data);
-
+        // TODO: Mensaje error o exito
         return view('crearUsuarios', [
             'usuario' => $user,
             'formUrl' => '/modificarUsuarios'
@@ -67,9 +67,12 @@ class AdminUsuarioController
         }
 
         $user->update($data);
+         // TODO: Mensaje error o exito
         return view('crearUsuarios', [
             'usuario' => $user,
             'formUrl' => '/modificarUsuarios'
         ]);
     }
+
+    // TODO: Eliminar
 }
