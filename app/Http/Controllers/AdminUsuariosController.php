@@ -74,5 +74,11 @@ class AdminUsuarioController
         ]);
     }
 
-    // TODO: Eliminar
+    public function delete(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect()->back();
+    }
 }

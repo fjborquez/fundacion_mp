@@ -26,6 +26,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/crearUsuarios', 'App\Http\Controllers\AdminUsuarioController@store');
     Route::get('/modificarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@modify');
     Route::post('/modificarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@update');
-    Route::delete('/repositorio', 'App\Http\Controllers\UserController@delete');
+    Route::get('/eliminarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@delete');
     Route::get('/logout', 'App\Http\Controllers\AdminLoginController@logout');
 });

@@ -71,7 +71,7 @@
                             <td>{{ $usuario->email }}</td>
                             <td>
                                 <a href="/modificarUsuarios/{{ $usuario->id }}" class="btn btn-warning btn-sm">Editar</a>
-                                <button type="button" class="btn btn-danger btn-sm">Eliminar</button>
+                                <a href="/eliminarUsuarios/{{ $usuario->id }}" class="btn btn-danger btn-sm">Eliminar</a>
                             </td>
                         </tr>
                         @endforeach
