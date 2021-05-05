@@ -44,13 +44,23 @@
       </div>
     </nav>
 
-    <main role="main" class="container">
+    @if(session()->has('message'))
+    <div class="alert alert-success">
+        {{ session()->get('message') }}
+    </div>
+    @endif
 
+    @if(session()->has('error'))
+    <div class="alert alert-error">
+        {{ session()->get('error') }}
+    </div>
+    @endif
+
+    <main role="main" class="container">
       <div class="starter-template">
         <h1>Bienvenidos al Sistema de Recoleccion de Datos de Licitaciones - Doble Impacto</h1>
         <p class="lead">Selecciona uno de los menus la barra para navegar en las configuraciones y gestiones del funcionamiento de la API</p>
       </div>
-
     </main><!-- /.container -->
 
 

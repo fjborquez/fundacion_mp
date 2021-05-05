@@ -35,11 +35,8 @@ class AdminUsuarioController
         $data = $request->only(['password', 'email', 'name', 'lastname']);
         $data['password'] = Hash::make($data['password']);
         $user = User::create($data);
-        // TODO: Mensaje error o exito
-        return view('crearUsuarios', [
-            'usuario' => $user,
-            'formUrl' => '/modificarUsuarios'
-        ]);
+
+        return redirect()->route('modificarUsuarios', ['id' => $user->id])->with('message','Usuario creado');
     }
 
     public function modify($id)
@@ -48,13 +45,16 @@ class AdminUsuarioController
 
         return view('crearUsuarios', [
             'usuario' => $user,
-            'formUrl' => '/modificarUsuarios'
+            'formUrl' => '/modificarUsuarios/' . $id
         ]);
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
+            'name' => 'required',
+            'lastname' => 'required',
+            'password' => 'required',
             'email' => 'email|unique:users,email,' . $id
         ]);
 
@@ -62,15 +62,16 @@ class AdminUsuarioController
         $user = User::findOrFail($id);
 
         if ($request->has('password') && 
-            $user->password === $request->get('password')) {
+            $user->password !== $request->get('password')) {
             $data['password'] = Hash::make($data['password']);
         }
 
         $user->update($data);
-         // TODO: Mensaje error o exito
+        $request->session()->now('message','Usuario modificado'); 
+
         return view('crearUsuarios', [
             'usuario' => $user,
-            'formUrl' => '/modificarUsuarios'
+            'formUrl' => '/modificarUsuarios' . $id
         ]);
     }
 
@@ -79,6 +80,10 @@ class AdminUsuarioController
         $user = User::findOrFail($id);
         $user->delete();
 
-        return redirect()->back();
+        $request->session()->now('message','Usuario eliminado'); 
+
+        return view('usuarios', [
+            'usuarios' => User::all()
+        ]);
     }
 }

@@ -22,9 +22,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/configuraciones', 'App\Http\Controllers\AdminConfiguracionesController@index')->name('configuraciones');
     Route::post('/configuraciones', 'App\Http\Controllers\AdminConfiguracionesController@store');
     Route::get('/usuarios', 'App\Http\Controllers\AdminUsuarioController@index');
-    Route::get('/crearUsuarios', 'App\Http\Controllers\AdminUsuarioController@add');
+    Route::get('/crearUsuarios', 'App\Http\Controllers\AdminUsuarioController@add')->name('crearUsuarios');
     Route::post('/crearUsuarios', 'App\Http\Controllers\AdminUsuarioController@store');
-    Route::get('/modificarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@modify');
+    Route::get('/modificarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@modify')->name('modificarUsuarios');
     Route::post('/modificarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@update');
     Route::get('/eliminarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@delete');
     Route::get('/logout', 'App\Http\Controllers\AdminLoginController@logout');

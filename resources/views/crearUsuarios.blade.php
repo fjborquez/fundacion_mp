@@ -44,37 +44,57 @@
       </div>
     </nav>
 
-    <main role="main" class="container">
-
-    <div class="row">
-        <div class="col-md-6 offset-md-3">
-        <form action="{{ $formUrl . '/' . $usuario->id }}" method="post">
-            {{ csrf_field() }}
-            <div class="form-group">
-                <label for="name">Nombre</label>
-                <input type="text" class="form-control" id="name" name="name" value="{{ $usuario->name }}" aria-describedby="emailHelp" />
-            </div>
-            <div class="form-group">
-                <label for="lastname">Apellidos</label>
-                <input type="text" class="form-control" id="lastname" name="lastname" value="{{ $usuario->lastname }}" aria-describedby="emailHelp" />
-            </div>
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" value="{{ $usuario->email }}" aria-describedby="emailHelp" />
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" value="{{ $usuario->password }}" />
-            </div>
-            <input type="submit" class="btn btn-success" value="Guardar Usuario" />
-            <a href="{{ url('/usuarios') }}" class="btn btn-danger">Cancelar</a>
-        </form>
-        </div>
+    @if(session()->has('message'))
+    <div class="alert alert-success">
+        {{ session()->get('message') }}
     </div>
+    @endif
 
+    @if(session()->has('error'))
+    <div class="alert alert-error">
+        {{ session()->get('error') }}
+    </div>
+    @endif
+
+    <main role="main" class="container">
+      <div class="row">
+          <div class="col-md-6 offset-md-3">
+          <form action="{{ $formUrl }}" method="post">
+              {{ csrf_field() }}
+              <div class="form-group">
+                  <label for="name">Nombre</label>
+                  <input type="text" class="form-control" id="name" name="name" value="{{ $usuario->name }}" aria-describedby="emailHelp" />
+                  @if ($errors->has('name'))
+                      <span class="text-danger">{{ $errors->first('name') }}</span>
+                  @endif
+              </div>
+              <div class="form-group">
+                  <label for="lastname">Apellidos</label>
+                  <input type="text" class="form-control" id="lastname" name="lastname" value="{{ $usuario->lastname }}" aria-describedby="emailHelp" />
+                  @if ($errors->has('email'))
+                      <span class="text-danger">{{ $errors->first('lastname') }}</span>
+                  @endif
+              </div>
+              <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" class="form-control" id="email" name="email" value="{{ $usuario->email }}" aria-describedby="emailHelp" />
+                  @if ($errors->has('email'))
+                      <span class="text-danger">{{ $errors->first('email') }}</span>
+                  @endif
+              </div>
+              <div class="form-group">
+                  <label for="password">Password</label>
+                  <input type="password" class="form-control" id="password" name="password" value="{{ $usuario->password }}" />
+                  @if ($errors->has('password'))
+                      <span class="text-danger">{{ $errors->first('password') }}</span>
+                  @endif
+              </div>
+              <input type="submit" class="btn btn-success" value="Guardar Usuario" />
+              <a href="{{ url('/usuarios') }}" class="btn btn-danger">Cancelar</a>
+          </form>
+          </div>
+      </div>
     </main><!-- /.container -->
-
-
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>

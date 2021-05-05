@@ -17,6 +17,18 @@
 
     </head>
     <body class="antialiased text-center">
+        @if(session()->has('message'))
+        <div class="alert alert-success">
+            {{ session()->get('message') }}
+        </div>
+        @endif
+
+        @if(session()->has('error'))
+        <div class="alert alert-error">
+            {{ session()->get('error') }}
+        </div>
+        @endif
+
         <form class="form-signin" method="post" action="{{ url('/login') }}">
             {{ csrf_field() }}
             <img src="https://bancaetica.lat/wp-content/uploads/sites/9/2021/01/logo2.png" alt="" class="mb-4 w50">

@@ -18,10 +18,10 @@ class AdminLoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            return redirect()->intended('home');
+            return redirect()->intended('home')->with('message', 'Inicio de sesión correcto');
         } else {
             // TODO Mensaje de error
-            return redirect()->route('login');
+            return redirect()->route('login')->with('error', 'Usuario y/o password incorrectos');
         }
     }
 
@@ -29,7 +29,6 @@ class AdminLoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        // TODO: mensaje
-        return redirect('/login');
+        return redirect('/login')->with('message', 'Sesión finalizada');
     }
 }

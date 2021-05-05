@@ -45,7 +45,6 @@ class AdminConfiguracionesController extends Controller
         }
 
         $etlSettings->save();
-        // TODO: Agregar mensaje
-        return redirect()->back();
+        return redirect()->back()->with('message', 'Configuraciones guardadas');
     }
 }
