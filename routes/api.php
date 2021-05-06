@@ -1,8 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\MercadoPublicoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,13 +13,15 @@ use App\Http\Controllers\MercadoPublicoController;
 |
 */
 
-Route::post('/tokens/create', 'App\Http\Controllers\TokenController@create');
-Route::get('/mercado-publico', 'App\Http\Controllers\MercadoPublicoController@index');
+Route::namespace('App\Http\Controllers')->group(function () {
+    Route::post('/tokens/create', 'TokenController@create');
+    Route::get('/mercado-publico', 'MercadoPublicoController@index');
+});
 
-Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/usuarios', 'App\Http\Controllers\UserController@index');
-    Route::get('/usuarios/{id}', 'App\Http\Controllers\UserController@show');
-    Route::post('/usuarios', 'App\Http\Controllers\UserController@store');
-    Route::put('/usuarios/{id}', 'App\Http\Controllers\UserController@update');
-    Route::delete('/usuarios/{id}', 'App\Http\Controllers\UserController@delete');
+Route::namespace('App\Http\Controllers')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/usuarios', 'UserController@index');
+    Route::get('/usuarios/{id}', 'UserController@show');
+    Route::post('/usuarios', 'UserController@store');
+    Route::put('/usuarios/{id}', 'UserController@update');
+    Route::delete('/usuarios/{id}', 'UserController@delete');
 });

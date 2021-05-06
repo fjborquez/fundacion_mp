@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use App\Services\MercadoPublico\MercadoPublicoETL;
+use Illuminate\Support\ServiceProvider;
 
 class MercadoPublicoETLServiceProvider extends ServiceProvider
 {

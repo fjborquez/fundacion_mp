@@ -2,9 +2,9 @@
 
 namespace App\Console;
 
+use App\Services\MercadoPublico\Settings\EtlSettings;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use App\Services\MercadoPublico\Settings\EtlSettings;
 
 class Kernel extends ConsoleKernel
 {

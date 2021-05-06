@@ -11,7 +11,7 @@ class ModificadorAreaSector extends Modificador {
         $categorias = [
             'educacion' => [
                 'area' => 'educación y cultura',
-                'sector' => 'educación'
+                'sector' => 'educación',
             ],
             'industriaCreativa' => [
                 'area' => 'educación y cultura',
@@ -19,52 +19,52 @@ class ModificadorAreaSector extends Modificador {
             ],
             'turismo' => [
                 'area' => 'educación y cultura',
-                'sector' => 'turismo'
+                'sector' => 'turismo',
             ],
             'espacioPublico' => [
                 'area' => 'desarrollo social',
-                'sector' => 'espacio público'
+                'sector' => 'espacio público',
             ],
             'diseño' => [
                 'area' => 'desarrollo social',
-                'sector' => 'diseño'
+                'sector' => 'diseño',
             ],
             'vialidad' => [
                 'area' => 'desarrollo social',
-                'sector' => 'vialidad'
+                'sector' => 'vialidad',
             ],
             'obrasPublicas' => [
                 'area' => 'desarrollo social',
-                'sector' => 'obras públicas'
+                'sector' => 'obras públicas',
             ],
             'salud' => [
                 'area' => 'desarrollo social',
-                'sector' => 'salud'
+                'sector' => 'salud',
             ],
             'inclusion' => [
                 'area' => 'desarrollo social',
-                'sector' => 'inclusión'
+                'sector' => 'inclusión',
             ],
             'agua' => [
                 'area' => 'medio ambiente',
-                'sector' => 'agua'
+                'sector' => 'agua',
             ],
             'apr' => [
                 'area' => 'medio ambiente',
-                'sector' => 'apr'
+                'sector' => 'apr',
             ],
             'sistemaAlimentarios' => [
                 'area' => 'medio ambiente',
-                'sector' => 'sistemas alimentarios'
+                'sector' => 'sistemas alimentarios',
             ],
             'produccionSostenible' => [
                 'area' => 'medio ambiente',
-                'sector' => 'producción sostenible'
+                'sector' => 'producción sostenible',
             ],
             'eficienciaEnergetica' => [
                 'area' => 'medio ambiente',
-                'sector' => 'eficiencia energética'
-            ]
+                'sector' => 'eficiencia energética',
+            ],
         ];
 
         foreach ($categorias as $indice => $categoria) {

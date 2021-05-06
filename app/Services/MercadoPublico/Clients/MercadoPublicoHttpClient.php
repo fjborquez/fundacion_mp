@@ -3,10 +3,10 @@
 namespace App\Services\MercadoPublico\Clients;
 
 use App\Services\MercadoPublico\Settings\MercadoPublicoSettings;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use DomainException;
 use Exception;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class MercadoPublicoHttpClient {
     private $settings;
@@ -38,7 +38,7 @@ class MercadoPublicoHttpClient {
     public function obtenerListaLicitaciones($fecha) {
         $params = [
             'fecha' => $fecha,
-            'ticket' => $this->settings->ticket
+            'ticket' => $this->settings->ticket,
         ];
 
         $licitaciones = $this->consultar($params);
@@ -52,7 +52,7 @@ class MercadoPublicoHttpClient {
     public function obtenerDetalleLicitacion($codigoExterno) {
         $params = [
             'ticket' => $this->settings->ticket,
-            'codigo' => $codigoExterno
+            'codigo' => $codigoExterno,
         ];
 
         return $this->consultar($params)->collect()->get('Listado')[0];
@@ -60,8 +60,8 @@ class MercadoPublicoHttpClient {
 
     private function consultar($params) {
         $response = Http::retry(
-            $this->settings->retry, 
-            $this->settings->milisegundos_entre_consultas)->get($this->settings->url_licitaciones, 
+            $this->settings->retry,
+            $this->settings->milisegundos_entre_consultas)->get($this->settings->url_licitaciones,
             $params
         );
 

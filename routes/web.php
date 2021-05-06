@@ -13,20 +13,27 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/login', 'App\Http\Controllers\AdminLoginController@index')->name('login');
-Route::post('/login', 'App\Http\Controllers\AdminLoginController@login');
+Route::namespace('App\Http\Controllers')->group(function () {
+    Route::get('/login', 'AdminLoginController@index')
+        ->name('login');
+    Route::post('/login', 'AdminLoginController@login');
+});
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/', 'App\Http\Controllers\AdminHomeController@index');
-    Route::get('/home', 'App\Http\Controllers\AdminHomeController@index')->name('home');
-    Route::get('/configuraciones', 'App\Http\Controllers\AdminConfiguracionesController@index')->name('configuraciones');
-    Route::post('/configuraciones', 'App\Http\Controllers\AdminConfiguracionesController@store');
-    Route::get('/usuarios', 'App\Http\Controllers\AdminUsuarioController@index');
-    Route::get('/crearUsuarios', 'App\Http\Controllers\AdminUsuarioController@add')->name('crearUsuarios');
-    Route::post('/crearUsuarios', 'App\Http\Controllers\AdminUsuarioController@store');
-    Route::get('/modificarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@modify')->name('modificarUsuarios');
-    Route::post('/modificarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@update');
-    Route::get('/eliminarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@delete');
-    Route::get('/repositorio', 'App\Http\Controllers\AdminHomeController@index');
-    Route::get('/logout', 'App\Http\Controllers\AdminLoginController@logout');
+Route::namespace('App\Http\Controllers')->middleware(['auth'])->group(function () {
+    Route::get('/', 'AdminHomeController@index');
+    Route::get('/home', 'AdminHomeController@index')
+        ->name('home');
+    Route::get('/configuraciones', 'AdminConfiguracionesController@index')
+        ->name('configuraciones');
+    Route::post('/configuraciones', 'AdminConfiguracionesController@store');
+    Route::get('/usuarios', 'AdminUsuarioController@index');
+    Route::get('/crearUsuarios', 'AdminUsuarioController@add')
+        ->name('crearUsuarios');
+    Route::post('/crearUsuarios', 'AdminUsuarioController@store');
+    Route::get('/modificarUsuarios/{id}', 'AdminUsuarioController@modify')
+        ->name('modificarUsuarios');
+    Route::post('/modificarUsuarios/{id}', 'AdminUsuarioController@update');
+    Route::get('/eliminarUsuarios/{id}', 'AdminUsuarioController@delete');
+    Route::get('/repositorio', 'AdminHomeController@index');
+    Route::get('/logout', 'AdminLoginController@logout');
 });

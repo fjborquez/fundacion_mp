@@ -51,7 +51,7 @@ class ListasPalabrasHelper {
             'eficienciaEnergetica' => $listaPalabrasClaveEficienciaEnergetica,
             'excluidasEducacionYCultura' => $listaPalabrasExcluidasEducacionYCultura,
             'excluidasDesarrolloSocial' => $listaPalabrasExcluidasDesarrolloSocial,
-            'excluidasMedioAmbiente' => $listaPalabrasExcluidasMedioAmbiente
+            'excluidasMedioAmbiente' => $listaPalabrasExcluidasMedioAmbiente,
         ];
     }
 }

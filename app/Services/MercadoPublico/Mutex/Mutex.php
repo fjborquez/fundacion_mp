@@ -10,7 +10,7 @@ class Mutex {
     private $file;
 
     public function __construct() {
-        $this->file = fopen(storage_path(self::ARCHIVO_BLOQUEO), "r+");
+        $this->file = fopen(storage_path(self::ARCHIVO_BLOQUEO), 'r+');
     }
 
     public function bloquear() {

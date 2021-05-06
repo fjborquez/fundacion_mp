@@ -4,6 +4,6 @@ namespace App\Services\MercadoPublico\Filtros;
 
 use RuntimeException;
 
-class FiltroException extends RuntimeException {
-
+class FiltroNoAplicado extends RuntimeException 
+{
 }

@@ -2,11 +2,11 @@
 
 namespace App\Services\MercadoPublico\Helpers;
 
-use App\Services\MercadoPublico\Settings\SalesforceSettings;
 use App\Services\MercadoPublico\Clients\BancaEticaSalesforceClient;
+use App\Services\MercadoPublico\Settings\SalesforceSettings;
 
-use Illuminate\Support\Arr;
 use DomainException;
+use Illuminate\Support\Arr;
 
 class SalesforceHelper {
     private $salesforceSettings;
@@ -44,11 +44,11 @@ class SalesforceHelper {
         $accountResponse = $bancaEticaSalesforceClient->obtenerAccountPorRut($rutProveedor);
 
         $account = [
-            'id' => ''
+            'id' => '',
         ];
         
         $lead = [
-            'id' => ''
+            'id' => '',
         ];
 
         if ($accountResponse['totalSize'] > 0) {
@@ -57,7 +57,7 @@ class SalesforceHelper {
                 'rut' => $rutProveedor,
                 'nombre' => $nombreProveedor,
                 'area' => $licitacion['area'],
-                'sector' => $licitacion['sector']
+                'sector' => $licitacion['sector'],
             ];
             $bancaEticaSalesforceClient->actualizarAccount($account);
         } else {
@@ -66,7 +66,7 @@ class SalesforceHelper {
                 'rut' => $rutProveedor,
                 'proveedor' => $nombreProveedor,
                 'area' => $licitacion['area'],
-                'sector' => $licitacion['sector']
+                'sector' => $licitacion['sector'],
             ];
 
             if ($leadResponse['totalSize'] > 0) {
@@ -102,7 +102,7 @@ class SalesforceHelper {
             'fecha' => $licitacion['Adjudicacion']['Fecha'],
             'monto' => $adjudicacion['Cantidad'] * $adjudicacion['MontoUnitario'],
             'nombreEvento' => $this->salesforceSettings->default_biographical_event_name,
-            'tramo_monto' => $tramo_monto
+            'tramo_monto' => $tramo_monto,
         ];
 
         $bancaEticaSalesforceClient->agregarEventoBiografico($eventoBiografico);

@@ -2,11 +2,10 @@
 
 namespace App\Services\MercadoPublico\Clients;
 
-use Omniphx\Forrest\Providers\Laravel\Facades\Forrest;
 use Carbon\Carbon;
+use Omniphx\Forrest\Providers\Laravel\Facades\Forrest;
 
 class BancaEticaSalesforceClient {
-
     public function autenticar() {
         Forrest::authenticate();
     }
@@ -23,35 +22,35 @@ class BancaEticaSalesforceClient {
 
     public function actualizarAccount($account) {
         $this->autenticar();
-        return Forrest::sobjects('Account/' . $account['id'],[
+        return Forrest::sobjects('Account/' . $account['id'], [
             'method' => 'patch',
-            'body'   => [
+            'body' => [
                 'DNI__c' => $account['rut'],
                 'Company' => $account['nombre'],
                 'Area__c' => $account['area'],
                 'Industry' => $account['sector']
-            ]
+            ],
         ]);
     }
 
     public function actualizarLead($lead) {
         $this->autenticar();
-        return Forrest::sobjects('Lead/' . $lead['id'],[
+        return Forrest::sobjects('Lead/' . $lead['id'], [
             'method' => 'patch',
-            'body'   => [
+            'body' => [
                 'DNI__c' => $lead['rut'],
                 'Company' => $lead['proveedor'],
                 'Area__c' => $lead['area'],
                 'Industry' => $lead['sector']
-            ]
+            ],
         ]);
     }
 
     public function agregarLead($lead) {
         $this->autenticar();
-        return Forrest::sobjects('Lead',[
+        return Forrest::sobjects('Lead', [
             'method' => 'post',
-            'body'   => [
+            'body' => [
                 'FirstName' => $lead['nombre'],
                 'LastName' => $lead['apellido'],
                 'DNI__c' => $lead['rut'],
@@ -59,15 +58,15 @@ class BancaEticaSalesforceClient {
                 'Address__c' => $lead['direccion'],
                 'Area__c' => $lead['area'],
                 'Industry' => $lead['sector']
-            ]
+            ],
         ]);
     }
 
     public function agregarEventoBiografico($eventoBiografico) {
         $this->autenticar();
-        return Forrest::sobjects('BiographicalEvent__c',[
+        return Forrest::sobjects('BiographicalEvent__c', [
             'method' => 'post',
-            'body'   => [
+            'body' => [
                 'BidId__c' => $eventoBiografico['codigo'],
                 'BidName__c' => $eventoBiografico['nombre'],
                 'Description__c' => $eventoBiografico['descripcion'],
@@ -79,7 +78,7 @@ class BancaEticaSalesforceClient {
                 'Date__c' => Carbon::parse($eventoBiografico['fecha'])->format('Y-m-d'),
                 'BidAmount__c' => $eventoBiografico['monto'],
                 'Name' => $eventoBiografico['nombreEvento']
-            ]
+            ],
         ]);
     }
 }

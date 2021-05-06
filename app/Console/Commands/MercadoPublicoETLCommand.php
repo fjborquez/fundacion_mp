@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Services\MercadoPublico\MercadoPublicoETL;
+use Illuminate\Console\Command;
 
 class MercadoPublicoETLCommand extends Command
 {

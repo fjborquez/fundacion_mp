@@ -10,7 +10,7 @@ class FiltroNombreLicitacionExcluidosCategoria extends Filtro {
         $exclusiones = [
             'educación y cultura' => 'excluidasEducacionYCultura',
             'desarrollo social' => 'excluidasDesarrolloSocial',
-            'medio ambiente' => 'excluidasMedioAmbiente'
+            'medio ambiente' => 'excluidasMedioAmbiente',
         ];
 
         foreach ($exclusiones as $index => $excluidas) {

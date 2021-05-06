@@ -4,6 +4,6 @@ namespace App\Services\MercadoPublico\Modificadores;
 
 use RuntimeException;
 
-class ModificadorException extends RuntimeException {
-
+class ModificadorNoAplicado extends RuntimeException
+{ 
 }

@@ -2,8 +2,8 @@
 
 namespace App\Services\MercadoPublico\Modificadores;
 
-use App\Services\MercadoPublico\Settings\EtlSettings;
 use App\Services\MercadoPublico\Helpers\ListasPalabrasHelper;
+use App\Services\MercadoPublico\Settings\EtlSettings;
 
 abstract class Modificador {
     protected $etlSettings;

@@ -3,27 +3,23 @@
 namespace App\Services\MercadoPublico;
 
 use App\Services\MercadoPublico\Clients\MercadoPublicoHttpClient;
+use App\Services\MercadoPublico\Filtros\FiltroNombreLicitacionExcluidosCategoria;
+use App\Services\MercadoPublico\Filtros\FiltroPalabraExcluidasNombreLicitacion;
+use App\Services\MercadoPublico\Filtros\FiltroTipoLicitacion;
 use App\Services\MercadoPublico\Helpers\EtlHelper;
 use App\Services\MercadoPublico\Helpers\SalesforceHelper;
-use App\Services\MercadoPublico\Mutex\Mutex;
-use App\Services\MercadoPublico\Filtros\FiltroTipoLicitacion;
-use App\Services\MercadoPublico\Filtros\FiltroPalabraExcluidasNombreLicitacion;
-use App\Services\MercadoPublico\Filtros\FiltroNombreLicitacionExcluidosCategoria;
 use App\Services\MercadoPublico\Modificadores\ModificadorAreaSector;
+use App\Services\MercadoPublico\Mutex\Mutex;
 use App\Services\MercadoPublico\Validadores\ValidadorAdjudicacion;
 use App\Services\MercadoPublico\Validadores\ValidadorItems;
 
+use BenTools\ETL\Etl;
+use BenTools\ETL\EtlBuilder;
+use BenTools\ETL\EventDispatcher\Event\EndProcessEvent;
+use BenTools\ETL\EventDispatcher\Event\ItemExceptionEvent;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Illuminate\Support\Arr;
-use BenTools\ETL\Etl;
-use BenTools\ETL\EtlBuilder;
-use BenTools\ETL\Transformer\CallableTransformer;
-use BenTools\ETL\EventDispatcher\Event\EndProcessEvent;
-use BenTools\ETL\EventDispatcher\Event\ItemExceptionEvent;
-use RuntimeException;
-use DomainException;
 
 class MercadoPublicoETL {
     private $etlHelper;
@@ -50,9 +46,8 @@ class MercadoPublicoETL {
         ];
         $this->validadores = [
             new ValidadorAdjudicacion(),
-            new ValidadorItems()
+            new ValidadorItems(),
         ];
-
     }
 
     public function generarETL($sendToSalesforce = false) {
@@ -70,7 +65,8 @@ class MercadoPublicoETL {
 
         $licitacionesProcesadas = [];
         $mercadoPublicoHttpClient = new MercadoPublicoHttpClient();
-        $fecha = Carbon::yesterday()->format('dmY');
+        //$fecha = Carbon::yesterday()->format('dmY');
+        $fecha = '07032021';
         $licitaciones = $mercadoPublicoHttpClient->obtenerLicitacionesConDetalles($fecha);
         
         Log::info('Enviar licitaciones a Salesforce: ' . var_export($sendToSalesforce, true));
@@ -79,7 +75,7 @@ class MercadoPublicoETL {
         $etl = EtlBuilder::init()
             ->transformWith(function($item) {
                 array_walk_recursive($item, function (&$value) {
-                    $value = mb_convert_encoding(Str::lower($value), "UTF-8");
+                    $value = mb_convert_encoding(Str::lower($value), 'UTF-8');
                 });
         
                 yield $item;

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AdminUsuarioController
@@ -19,7 +19,7 @@ class AdminUsuarioController
     {
         return view('crearUsuarios', [
             'formUrl' => '/crearUsuarios',
-            'usuario' => new User
+            'usuario' => new User()
         ]);
     }
 
@@ -36,7 +36,7 @@ class AdminUsuarioController
         $data['password'] = Hash::make($data['password']);
         $user = User::create($data);
 
-        return redirect()->route('modificarUsuarios', ['id' => $user->id])->with('message','Usuario creado');
+        return redirect()->route('modificarUsuarios', ['id' => $user->id])->with('message', 'Usuario creado');
     }
 
     public function modify($id)
@@ -67,7 +67,7 @@ class AdminUsuarioController
         }
 
         $user->update($data);
-        $request->session()->now('message','Usuario modificado'); 
+        $request->session()->now('message', 'Usuario modificado'); 
 
         return view('crearUsuarios', [
             'usuario' => $user,
@@ -80,7 +80,7 @@ class AdminUsuarioController
         $user = User::findOrFail($id);
         $user->delete();
 
-        $request->session()->now('message','Usuario eliminado'); 
+        $request->session()->now('message', 'Usuario eliminado'); 
 
         return view('usuarios', [
             'usuarios' => User::all()
