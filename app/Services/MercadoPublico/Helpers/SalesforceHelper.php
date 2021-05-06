@@ -36,7 +36,7 @@ class SalesforceHelper {
             throw new DomainException('La adjudicacion no cumple formato para envio a Salesforce');
         }
 
-        // TODO: Funcion para formatear rut
+        // TODO: Pasar a modificador
         $rutProveedor = str_replace('.', '', $adjudicacion['RutProveedor']);
         $nombreProveedor = $adjudicacion['NombreProveedor'];
 
@@ -82,6 +82,14 @@ class SalesforceHelper {
             }
         }
 
+        // TODO: Pasar a modficiador
+        $monto = $adjudicacion['Cantidad'] * $adjudicacion['MontoUnitario'];
+        $tramo_monto = 'B1';
+
+        if ($monto > 100000000) {
+            $tramo_monto = 'A1';
+        }
+
         $eventoBiografico = [
             'codigo' => $licitacion['CodigoExterno'],
             'nombre' => $licitacion['Nombre'],
@@ -93,7 +101,8 @@ class SalesforceHelper {
             'recordTypeId' => $this->salesforceSettings->record_type_id,
             'fecha' => $licitacion['Adjudicacion']['Fecha'],
             'monto' => $adjudicacion['Cantidad'] * $adjudicacion['MontoUnitario'],
-            'nombreEvento' => $this->salesforceSettings->default_biographical_event_name
+            'nombreEvento' => $this->salesforceSettings->default_biographical_event_name,
+            'tramo_monto' => $tramo_monto
         ];
 
         $bancaEticaSalesforceClient->agregarEventoBiografico($eventoBiografico);
