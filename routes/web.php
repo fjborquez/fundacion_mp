@@ -27,5 +27,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/modificarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@modify')->name('modificarUsuarios');
     Route::post('/modificarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@update');
     Route::get('/eliminarUsuarios/{id}', 'App\Http\Controllers\AdminUsuarioController@delete');
+    Route::get('/repositorio', 'App\Http\Controllers\AdminHomeController@index');
     Route::get('/logout', 'App\Http\Controllers\AdminLoginController@logout');
 });
