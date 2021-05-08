@@ -17,26 +17,11 @@ class SalesforceHelper {
 
     public function enviarAdjudicacionesASalesforce($licitacion) {
         foreach($licitacion['Items']['Listado'] as $item) {
-            try {
-                // TODO: Crear validador
-                if (!Arr::exists($item, 'Adjudicacion')) {
-                    throw new DomainException('El Item no cumple formato para envio a Salesforce');
-                }
-    
-                $this->enviarAdjudicacionASalesforce($licitacion, $item['Adjudicacion']);
-            } catch (Exception $exception) {
-                Log::notice('Ha ocurrido un problema al intentar enviar a Salesforce adjudicacion ' . $item['Correlativo'] . ' de la licitacion ' . $licitacion['CodigoExterno'] . ': ' . $exception->getMessage());
-            }
+            $this->enviarAdjudicacionASalesforce($licitacion, $item['Adjudicacion']);
         }
     }
 
     public function enviarAdjudicacionASalesforce($licitacion, $adjudicacion) {
-        // TODO: Crear validador
-        if (!is_array($adjudicacion)) {
-            throw new DomainException('La adjudicacion no cumple formato para envio a Salesforce');
-        }
-
-        // TODO: Pasar a modificador
         $rutProveedor = $adjudicacion['RutProveedor'];
         $nombreProveedor = $adjudicacion['NombreProveedor'];
 
