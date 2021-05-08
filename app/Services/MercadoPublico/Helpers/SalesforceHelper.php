@@ -67,14 +67,6 @@ class SalesforceHelper {
             }
         }
 
-        // TODO: Pasar a modficiador
-        $monto = $adjudicacion['Cantidad'] * $adjudicacion['MontoUnitario'];
-        $tramo_monto = 'B1';
-
-        if ($monto > 100000000) {
-            $tramo_monto = 'A1';
-        }
-
         $eventoBiografico = [
             'codigo' => $licitacion['CodigoExterno'],
             'nombre' => $licitacion['Nombre'],
@@ -85,9 +77,9 @@ class SalesforceHelper {
             'accountId' => $account['id'],
             'recordTypeId' => $this->salesforceSettings->record_type_id,
             'fecha' => $licitacion['Adjudicacion']['Fecha'],
-            'monto' => $adjudicacion['Cantidad'] * $adjudicacion['MontoUnitario'],
+            'monto' => $adjudicacion['MontoTotal'],
             'nombreEvento' => $this->salesforceSettings->default_biographical_event_name,
-            'tramo_monto' => $tramo_monto,
+            'tramo_monto' => $adjudicacion['TramoMonto'],
         ];
 
         $bancaEticaSalesforceClient->agregarEventoBiografico($eventoBiografico);

@@ -10,7 +10,9 @@ use App\Services\MercadoPublico\Helpers\EtlHelper;
 use App\Services\MercadoPublico\Helpers\SalesforceHelper;
 use App\Services\MercadoPublico\Modificadores\ModificadorAreaSector;
 use App\Services\MercadoPublico\Modificadores\ModificadorFormatoRutAdjudicacion;
+use App\Services\MercadoPublico\Modificadores\ModificadorMontoTotal;
 use App\Services\MercadoPublico\Modificadores\ModificadorQuitarAdjudicacionesNulas;
+use App\Services\MercadoPublico\Modificadores\ModificadorTramoMonto;
 use App\Services\MercadoPublico\Mutex\Mutex;
 use App\Services\MercadoPublico\Validadores\ValidadorAdjudicacion;
 use App\Services\MercadoPublico\Validadores\ValidadorItems;
@@ -47,6 +49,8 @@ class MercadoPublicoETL {
             new ModificadorAreaSector(),
             new ModificadorQuitarAdjudicacionesNulas(),
             new ModificadorFormatoRutAdjudicacion(),
+            new ModificadorMontoTotal(),
+            new ModificadorTramoMonto(),
         ];
         $this->validadores = [
             new ValidadorAdjudicacion(),

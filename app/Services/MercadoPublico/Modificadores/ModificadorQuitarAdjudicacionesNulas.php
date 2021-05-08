@@ -3,7 +3,6 @@
 namespace App\Services\MercadoPublico\Modificadores;
 
 use App\Services\MercadoPublico\Modificadores\Modificador;
-use Illuminate\Support\Str;
 
 class ModificadorQuitarAdjudicacionesNulas extends Modificador {
     public function ejecutar(&$licitacion) {
