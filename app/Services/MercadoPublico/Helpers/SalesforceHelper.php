@@ -37,7 +37,7 @@ class SalesforceHelper {
         }
 
         // TODO: Pasar a modificador
-        $rutProveedor = str_replace('.', '', $adjudicacion['RutProveedor']);
+        $rutProveedor = $adjudicacion['RutProveedor'];
         $nombreProveedor = $adjudicacion['NombreProveedor'];
 
         $bancaEticaSalesforceClient = new BancaEticaSalesforceClient();
