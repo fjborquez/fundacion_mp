@@ -9,7 +9,7 @@ class ModificadorTramoMonto extends Modificador {
         foreach($licitacion['Items']['Listado'] as $key => &$item) {
             $item['Adjudicacion']['TramoMonto'] = 'B1';
 
-            if ($item['Adjudicacion']['MontoTotal'] > 10000000) {
+            if ($item['Adjudicacion']['MontoTotal'] > 100000000) {
                 $item['Adjudicacion']['TramoMonto'] = 'A1';
             }
         }
