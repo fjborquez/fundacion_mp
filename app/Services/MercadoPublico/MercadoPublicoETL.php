@@ -6,6 +6,7 @@ use App\Services\MercadoPublico\Clients\MercadoPublicoHttpClient;
 use App\Services\MercadoPublico\Filtros\FiltroNombreLicitacionExcluidosCategoria;
 use App\Services\MercadoPublico\Filtros\FiltroPalabraExcluidasNombreLicitacion;
 use App\Services\MercadoPublico\Filtros\FiltroTipoLicitacion;
+use App\Services\MercadoPublico\Helpers\CsvHelper;
 use App\Services\MercadoPublico\Helpers\EtlHelper;
 use App\Services\MercadoPublico\Helpers\SalesforceHelper;
 use App\Services\MercadoPublico\Modificadores\ModificadorAreaSector;
@@ -31,11 +32,13 @@ class MercadoPublicoETL {
     private $salesforceHelper;
     private $filtros;
     private $modificadores;
+    private $csvHelper;
 
     public function __construct() {
         $this->etlHelper = new EtlHelper();
         $this->mutex = new Mutex();
         $this->salesforceHelper = new SalesforceHelper();
+        $this->csvHelper = new CsvHelper();
         $this->filtros = [
             'premodificadores' => [
                 new FiltroTipoLicitacion(),
@@ -72,8 +75,10 @@ class MercadoPublicoETL {
         Log::info('Ha iniciado el proceso de ETL');
 
         $licitacionesProcesadas = [];
+        $licitacionesConProblemas = [];
         $mercadoPublicoHttpClient = new MercadoPublicoHttpClient();
-        $fecha = Carbon::yesterday()->format('dmY');
+        //$fecha = Carbon::yesterday()->format('dmY');
+        $fecha = '07032021';
         $licitaciones = $mercadoPublicoHttpClient->obtenerLicitacionesConDetalles($fecha);
         
         Log::info('Enviar licitaciones a Salesforce: ' . var_export($sendToSalesforce, true));
@@ -94,7 +99,8 @@ class MercadoPublicoETL {
                         $this->etlHelper->aplicarFiltros($licitacion, $this->filtros['premodificadores'], $etl);
                         $this->etlHelper->aplicarModificadores($licitacion, $this->modificadores, $etl);
                         $this->etlHelper->aplicarFiltros($licitacion, $this->filtros['postmodificadores'], $etl);
-
+                        
+                        // TODO: Pasar a onEnd
                         if ($sendToSalesforce) {
                             $this->salesforceHelper->enviarAdjudicacionesASalesforce($licitacion);
                         }
@@ -102,11 +108,13 @@ class MercadoPublicoETL {
                         $licitacionesProcesadas[] = $licitacion;
                     }
                 })
-            ->onEnd(function(EndProcessEvent $event) use (&$licitacionesProcesadas) {
+            ->onEnd(function(EndProcessEvent $event) use (&$licitacionesProcesadas, &$licitacionesConProblemas, $fecha) {
+                $this->csvHelper->generarArchivo($licitacionesConProblemas, $fecha);
                 Log::info('Ha concluido la ETL con ' . count($licitacionesProcesadas) . ' licitaciones filtradas.');
             })
-            ->onLoadException(function(ItemExceptionEvent $exception) {
+            ->onLoadException(function(ItemExceptionEvent $exception) use (&$licitacionesConProblemas) {
                 Log::error('Ha ocurrido un error al procesar licitacion ' . $exception->getItem()['CodigoExterno'] . ': ' . $exception->getException()->getMessage());
+                $licitacionesConProblemas[] = $exception->getItem();
                 $exception->ignoreException();
             })
             ->createEtl();
