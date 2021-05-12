@@ -1,0 +1,32 @@
+{
+    "Cantidad": 5,
+    "FechaCreacion": "2021-05-11T20:58:34.29",
+    "Version": "v1",
+    "Listado": [{
+            "CodigoExterno": "1078630-1-LE21",
+            "Nombre": "Servicio de mensura de 48 casos lote A21-1-1",
+            "CodigoEstado": 8,
+            "FechaCierre": "2021-02-23T13:00:00"
+        }, {
+            "CodigoExterno": "1126922-10-LQ21",
+            "Nombre": "036 SERVICIO DE TRANSPORTE ESCOLAR PARA FRESIA",
+            "CodigoEstado": 8,
+            "FechaCierre": "2021-03-04T20:00:00"
+        }, {
+            "CodigoExterno": "1078630-2-LP21",
+            "Nombre": "Servicio de mensura de 226 casos lote A21-2-1",
+            "CodigoEstado": 8,
+            "FechaCierre": "2021-02-23T13:00:00"
+        }, {
+            "CodigoExterno": "3844-7-LQ20",
+            "Nombre": "SERVICIO DE MANTENCIÓN, SOPORTE Y DESARROLLO SCM",
+            "CodigoEstado": 8,
+            "FechaCierre": "2021-01-20T15:00:00"
+        }, {
+            "CodigoExterno": "852-5-LE21",
+            "Nombre": "IMPERMEABILIZACIÓN Y MEJORAMIENTO DE TERRAZA DE LA SALA CUNA Y JARDÍN INFANTIL PEWEN, COMUNA DE MELIPEUCO",
+            "CodigoEstado": 8,
+            "FechaCierre": "2021-02-25T16:00:00"
+        }
+    ]
+}
