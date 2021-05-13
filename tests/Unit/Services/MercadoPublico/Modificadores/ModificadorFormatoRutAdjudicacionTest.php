@@ -2,11 +2,11 @@
 
 namespace Tests\Unit;
 
-use App\Services\MercadoPublico\Modificadores\ModificadorMontoTotal;
+use App\Services\MercadoPublico\Modificadores\ModificadorFormatoRutAdjudicacion;
 use ErrorException;
 use Tests\TestCase;
 
-class ModificadorMontoTotalTest extends TestCase
+class ModificadorFormatoRutAdjudicacionTest extends TestCase
 {
     protected $licitacionConAdjudicacionesNulas;
     protected $licitacionSinAdjudicacionesNulas;
@@ -46,7 +46,7 @@ class ModificadorMontoTotalTest extends TestCase
     {
         $this->expectException(ErrorException::class);
 
-        $modificador = new ModificadorMontoTotal();
+        $modificador = new ModificadorFormatoRutAdjudicacion();
         $modificador->ejecutar($this->licitacionConAdjudicacionesNulas);
     }
 
@@ -55,9 +55,9 @@ class ModificadorMontoTotalTest extends TestCase
      *
      * @return void
      */
-    public function test_Should_ReturnTrueAndAddAdjudicacionMontoTotal_When_AdjudicacionIsNotNull()
+    public function test_Should_ReturnTrueAndAddRemoveDotsFromRutProveedor_When_AdjudicacionIsNotNull()
     {
-        $modificador = new ModificadorMontoTotal();
+        $modificador = new ModificadorFormatoRutAdjudicacion();
         $modificadorReturn = $modificador->ejecutar($this->licitacionSinAdjudicacionesNulas);
         
         $this->assertTrue($modificadorReturn);
@@ -65,10 +65,9 @@ class ModificadorMontoTotalTest extends TestCase
         foreach($this->licitacionSinAdjudicacionesNulas['Items']['Listado'] as $item)
         {
             $adjudicacion = $item['Adjudicacion'];
-            $montoTotal = $adjudicacion['Cantidad'] * $adjudicacion['MontoUnitario'];
+            $rutProveedor = $adjudicacion['RutProveedor'];
             
-            $this->assertArrayHasKey('MontoTotal', $adjudicacion);
-            $this->assertEquals($montoTotal, $adjudicacion['MontoTotal']);
+            $this->assertFalse(str_contains($rutProveedor, '.'));
         }
     }
 }

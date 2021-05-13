@@ -2,11 +2,11 @@
 
 namespace Tests\Unit;
 
-use App\Services\MercadoPublico\Modificadores\ModificadorMontoTotal;
+use App\Services\MercadoPublico\Modificadores\ModificadorTramoMonto;
 use ErrorException;
 use Tests\TestCase;
 
-class ModificadorMontoTotalTest extends TestCase
+class ModificadorTramoMontoTest extends TestCase
 {
     protected $licitacionConAdjudicacionesNulas;
     protected $licitacionSinAdjudicacionesNulas;
@@ -26,7 +26,7 @@ class ModificadorMontoTotalTest extends TestCase
 
     private function setUpLicitacionSinAdjudicacionesNulas() 
     {
-        $path = storage_path("testing/json/licitacion_sin_adjudicaciones_nulas.json");
+        $path = storage_path("testing/json/licitacion_sin_adjudicaciones_nulas_y_monto_total.json");
         $this->openLicitacion($path, $this->licitacionSinAdjudicacionesNulas);
     }
 
@@ -46,7 +46,7 @@ class ModificadorMontoTotalTest extends TestCase
     {
         $this->expectException(ErrorException::class);
 
-        $modificador = new ModificadorMontoTotal();
+        $modificador = new ModificadorTramoMonto();
         $modificador->ejecutar($this->licitacionConAdjudicacionesNulas);
     }
 
@@ -55,9 +55,9 @@ class ModificadorMontoTotalTest extends TestCase
      *
      * @return void
      */
-    public function test_Should_ReturnTrueAndAddAdjudicacionMontoTotal_When_AdjudicacionIsNotNull()
+    public function test_Should_ReturnTrueAndTramoMontoEqualsA1_When_AdjudicacionIsNotNullAndMontoTotalGreaterThan100000000()
     {
-        $modificador = new ModificadorMontoTotal();
+        $modificador = new ModificadorTramoMonto();
         $modificadorReturn = $modificador->ejecutar($this->licitacionSinAdjudicacionesNulas);
         
         $this->assertTrue($modificadorReturn);
@@ -65,10 +65,29 @@ class ModificadorMontoTotalTest extends TestCase
         foreach($this->licitacionSinAdjudicacionesNulas['Items']['Listado'] as $item)
         {
             $adjudicacion = $item['Adjudicacion'];
-            $montoTotal = $adjudicacion['Cantidad'] * $adjudicacion['MontoUnitario'];
             
-            $this->assertArrayHasKey('MontoTotal', $adjudicacion);
-            $this->assertEquals($montoTotal, $adjudicacion['MontoTotal']);
+            if ($adjudicacion['MontoTotal'] > 100000000) {
+                $this->assertArrayHasKey('TramoMonto', $adjudicacion);
+                $this->assertEquals('A1', $adjudicacion['TramoMonto']);
+            }
+        }
+    }
+
+    public function test_Should_ReturnTrueAndTramoMontoEqualsB1_When_AdjudicacionIsNotNullAndMontoTotalLessThanOrEquals100000000()
+    {
+        $modificador = new ModificadorTramoMonto();
+        $modificadorReturn = $modificador->ejecutar($this->licitacionSinAdjudicacionesNulas);
+        
+        $this->assertTrue($modificadorReturn);
+
+        foreach($this->licitacionSinAdjudicacionesNulas['Items']['Listado'] as $item)
+        {
+            $adjudicacion = $item['Adjudicacion'];
+            
+            if ($adjudicacion['MontoTotal'] <= 100000000) {
+                $this->assertArrayHasKey('TramoMonto', $adjudicacion);
+                $this->assertEquals('B1', $adjudicacion['TramoMonto']);
+            }
         }
     }
 }
