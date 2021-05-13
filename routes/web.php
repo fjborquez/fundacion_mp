@@ -34,6 +34,7 @@ Route::namespace('App\Http\Controllers')->middleware(['auth'])->group(function (
         ->name('modificarUsuarios');
     Route::post('/modificarUsuarios/{id}', 'AdminUsuarioController@update');
     Route::get('/eliminarUsuarios/{id}', 'AdminUsuarioController@delete');
-    Route::get('/repositorio', 'AdminHomeController@index');
+    Route::get('/repositorio', 'AdminRepositorioController@index');
+    Route::get('/repositorio/download/{file}', 'AdminRepositorioController@download');
     Route::get('/logout', 'AdminLoginController@logout');
 });

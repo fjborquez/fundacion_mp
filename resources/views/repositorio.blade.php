@@ -58,14 +58,16 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @foreach ($files as $index => $file)
                         <tr>
-                            <td>1</td>
-                            <td>29-04-2021</td>
-                            <td>29042021_lic-no-select.csv</td>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ date('d/m/Y', $file['timestamp']) }}</td>
+                            <td>{{ $file['basename'] }}</td>
                             <td>
-                                <button type="button" class="btn btn-info btn-sm">Descargar</button>
+                                <a href="/repositorio/download/{{ $file['basename'] }}" class="btn btn-info btn-sm">Descargar</a>
                             </td>
                         </tr>
+                        @endforeach
                     </tbody>
                 </table>
               </div>
