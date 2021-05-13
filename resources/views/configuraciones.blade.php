@@ -10,9 +10,6 @@
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
-
-
-
     </head>
     <body>
 
@@ -57,24 +54,26 @@
 
     <main role="main" class="container">
 
-      <div class="starter-template">
-      <h2>Formulario de Configuraciones para Inclusiones/Exclusiones</h2>
-      <small>Las palabras deben ir por obligacion separadas por punto y coma (;) y
-      todas las palabras en minusculas. Esto para mantener concordancia con la base de datos de mercado publico</small>
-        <form class=" my-4" action="/configuraciones" method="post">
-          <div class="form-group">
+        <div>
+            <h2>Formulario de Configuraciones para Inclusiones/Exclusiones</h2>
+            <small>Las palabras deben ir por obligacion separadas por punto y coma (;) y
+            todas las palabras en minusculas. Esto para mantener concordancia con la base de datos de mercado publico</small>
+
+            <form class="mb-5 pb-5 mt-5 row" action="/configuraciones" method="post">
             @foreach ($settings as $settingName => $settingValue)
-            <label for="{{ $settingName }}">{{ ucfirst(str_replace('_', ' ', $settingName)) }}</label>
-            <textarea class="form-control" id="{{ $settingName }}" name="settings[{{ $settingName }}]" rows="3">{{$settingValue}}</textarea>
-            @endforeach
-          </div>
-          {{ csrf_field() }}
-          <input type="submit" class="btn btn-primary" value="GUARDAR CONFIGURACION" />
-        </form>
-      </div>
+                <div class="form-group col-md-6">
+
+                    <label for="{{ $settingName }}">{{ ucfirst(str_replace('_', ' ', $settingName)) }}</label>
+                    <textarea class="form-control" id="{{ $settingName }}" name="settings[{{ $settingName }}]" rows="5">{{$settingValue}}</textarea>
+
+                </div>
+                @endforeach
+                {{ csrf_field() }}
+                <input type="submit" class="btn btn-primary" value="GUARDAR CONFIGURACION" />
+            </form>
+        </div>
 
     </main><!-- /.container -->
-
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
