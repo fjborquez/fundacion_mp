@@ -27,13 +27,13 @@ jobs:
                 mkdir -p database
                 touch database/database.sqlite
             - name: Execute tests (Unit and Feature tests) via PHPUnit
-                env:
+              env:
                     DB_CONNECTION: sqlite
                     DB_DATABASE: database/database.sqlite
                     CACHE_DRIVER: array
                     SESSION_DRIVER: array
                     QUEUE_DRIVER: sync
-                run: |
+              run: |
                     php artisan migrate
                     php artisan db:seed
                     php artisan test
