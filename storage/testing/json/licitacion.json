@@ -1,0 +1,211 @@
+{
+    "Cantidad": 1,
+    "FechaCreacion": "2021-05-11T21:11:30.403",
+    "Version": "v1",
+    "Listado": [{
+            "CodigoExterno": "1126922-10-LQ21",
+            "Nombre": "036 SERVICIO DE TRANSPORTE ESCOLAR PARA FRESIA",
+            "CodigoEstado": 8,
+            "Descripcion": "SERVICIO DE TRANSPORTE ESCOLAR, PARA LA COMUNA DE FRESIA, SERVICIO LOCAL DE EDUCACION, PROVINCIA DE LLANQUIHUE, DECIMA REGIÓN.",
+            "FechaCierre": null,
+            "Estado": "Adjudicada",
+            "Comprador": {
+                "CodigoOrganismo": "1717137",
+                "NombreOrganismo": "SERVICIO LOCAL DE EDUCACION PUBLICA DE LLANQUIHUE",
+                "RutUnidad": "62.000.800-1",
+                "CodigoUnidad": "1126922",
+                "NombreUnidad": "SERVICIO LOCAL DE EDUCACION PUBLICA DE LLANQUIHUE",
+                "DireccionUnidad": "AVENIDA ARTURO ALESSANDRI 187",
+                "ComunaUnidad": "Frutillar",
+                "RegionUnidad": "Región de los Lagos ",
+                "RutUsuario": "13.342.558-6",
+                "CodigoUsuario": "1823484",
+                "NombreUsuario": "Victor Sanchez",
+                "CargoUsuario": "Supervisor"
+            },
+            "DiasCierreLicitacion": "0",
+            "Informada": 0,
+            "CodigoTipo": 1,
+            "Tipo": "LQ",
+            "TipoConvocatoria": "1",
+            "Moneda": "CLP",
+            "Etapas": 1,
+            "EstadoEtapas": "1",
+            "TomaRazon": "0",
+            "EstadoPublicidadOfertas": 1,
+            "JustificacionPublicidad": "",
+            "Contrato": "0",
+            "Obras": "0",
+            "CantidadReclamos": 0,
+            "Fechas": {
+                "FechaCreacion": "2021-02-18T00:00:00",
+                "FechaCierre": "2021-03-04T20:00:00",
+                "FechaInicio": "2021-02-22T20:01:00",
+                "FechaFinal": "2021-02-25T10:00:00",
+                "FechaPubRespuestas": "2021-02-26T10:00:00",
+                "FechaActoAperturaTecnica": "2021-03-04T20:01:00",
+                "FechaActoAperturaEconomica": "2021-03-04T20:01:00",
+                "FechaPublicacion": "2021-02-22T19:43:00.47",
+                "FechaAdjudicacion": "2021-03-07T12:55:43.213",
+                "FechaEstimadaAdjudicacion": "2021-03-30T19:52:00",
+                "FechaSoporteFisico": null,
+                "FechaTiempoEvaluacion": null,
+                "FechaEstimadaFirma": null,
+                "FechasUsuario": null,
+                "FechaVisitaTerreno": null,
+                "FechaEntregaAntecedentes": null
+            },
+            "UnidadTiempoEvaluacion": 1,
+            "DireccionVisita": "",
+            "DireccionEntrega": "",
+            "Estimacion": 1,
+            "FuenteFinanciamiento": "",
+            "VisibilidadMonto": 0,
+            "MontoEstimado": null,
+            "Tiempo": "12",
+            "UnidadTiempo": "1",
+            "Modalidad": 1,
+            "TipoPago": "1",
+            "NombreResponsablePago": "Eduardo Garcia",
+            "EmailResponsablePago": "eduardo.garcia@educacionpublica.cl",
+            "NombreResponsableContrato": "VICTOR SANCHEZ",
+            "EmailResponsableContrato": "victor.sanchez@educacionpublica.cl",
+            "FonoResponsableContrato": "56-9-71306637-",
+            "ProhibicionContratacion": "",
+            "SubContratacion": "0",
+            "UnidadTiempoDuracionContrato": 4,
+            "TiempoDuracionContrato": "12",
+            "TipoDuracionContrato": " ",
+            "JustificacionMontoEstimado": "SEGUN BASES DE LICITACIÓN.",
+            "ObservacionContract": null,
+            "ExtensionPlazo": 0,
+            "EsBaseTipo": 0,
+            "UnidadTiempoContratoLicitacion": "2",
+            "ValorTiempoRenovacion": "0",
+            "PeriodoTiempoRenovacion": " ",
+            "EsRenovable": 0,
+            "Adjudicacion": {
+                "Tipo": 2,
+                "Fecha": "2021-03-07T00:00:00",
+                "Numero": "182",
+                "NumeroOferentes": 13,
+                "UrlActa": "http://www.mercadopublico.cl/Procurement/Modules/RFB/StepsProcessAward/PreviewAwardAct.aspx?qs=0nI53dHRDI+3bzOSKtaPmK/mVORPT3tRPDgkLzH8/ww="
+            },
+            "Items": {
+                "Cantidad": 8,
+                "Listado": [{
+                        "Correlativo": 1,
+                        "CodigoProducto": 78111802,
+                        "CodigoCategoria": "78111800",
+                        "Categoria": "Servicios de transporte, almacenaje y correo / Transporte de pasajeros / Transporte de pasajeros por carretera",
+                        "NombreProducto": "Servicios de autobuses regulares, recorridos fijos o servicios programados",
+                        "Descripcion": "SERVICIO DE TRANSPORTE ESCOLAR, PARA LA COMUNA DE FRESIA, LINEA 1 DE LAS BASES DE LICITACION.",
+                        "UnidadMedida": "Unidad",
+                        "Cantidad": 1.0,
+                        "Adjudicacion": null
+                    }, {
+                        "Correlativo": 2,
+                        "CodigoProducto": 78111802,
+                        "CodigoCategoria": "78111800",
+                        "Categoria": "Servicios de transporte, almacenaje y correo / Transporte de pasajeros / Transporte de pasajeros por carretera",
+                        "NombreProducto": "Servicios de autobuses regulares, recorridos fijos o servicios programados",
+                        "Descripcion": "SERVICIO DE TRANSPORTE ESCOLAR, PARA LA COMUNA DE FRESIA, LINEA 2 DE LAS BASES DE LICITACION.",
+                        "UnidadMedida": "Unidad",
+                        "Cantidad": 1.0,
+                        "Adjudicacion": {
+                            "RutProveedor": "77.045.803-k",
+                            "NombreProveedor": "SOCIEDAD DE TRANSPORTES LOS RISCOS SPA",
+                            "Cantidad": 199.0,
+                            "MontoUnitario": 57000.0
+                        }
+                    }, {
+                        "Correlativo": 3,
+                        "CodigoProducto": 78111802,
+                        "CodigoCategoria": "78111800",
+                        "Categoria": "Servicios de transporte, almacenaje y correo / Transporte de pasajeros / Transporte de pasajeros por carretera",
+                        "NombreProducto": "Servicios de autobuses regulares, recorridos fijos o servicios programados",
+                        "Descripcion": "SERVICIO DE TRANSPORTE ESCOLAR, PARA LA COMUNA DE FRESIA, LINEA 3 DE LAS BASES DE LICITACION.",
+                        "UnidadMedida": "Unidad",
+                        "Cantidad": 1.0,
+                        "Adjudicacion": {
+                            "RutProveedor": "76.246.755-0",
+                            "NombreProveedor": "DISTRIBUIDORA MARCOS EL 46 S. A.",
+                            "Cantidad": 194.0,
+                            "MontoUnitario": 61088.0
+                        }
+                    }, {
+                        "Correlativo": 4,
+                        "CodigoProducto": 78111802,
+                        "CodigoCategoria": "78111800",
+                        "Categoria": "Servicios de transporte, almacenaje y correo / Transporte de pasajeros / Transporte de pasajeros por carretera",
+                        "NombreProducto": "Servicios de autobuses regulares, recorridos fijos o servicios programados",
+                        "Descripcion": "SERVICIO DE TRANSPORTE ESCOLAR, PARA LA COMUNA DE FRESIA, LINEA 4 DE LAS BASES DE LICITACION.",
+                        "UnidadMedida": "Unidad",
+                        "Cantidad": 1.0,
+                        "Adjudicacion": {
+                            "RutProveedor": "76.246.755-0",
+                            "NombreProveedor": "DISTRIBUIDORA MARCOS EL 46 S. A.",
+                            "Cantidad": 194.0,
+                            "MontoUnitario": 60000.0
+                        }
+                    }, {
+                        "Correlativo": 5,
+                        "CodigoProducto": 78111802,
+                        "CodigoCategoria": "78111800",
+                        "Categoria": "Servicios de transporte, almacenaje y correo / Transporte de pasajeros / Transporte de pasajeros por carretera",
+                        "NombreProducto": "Servicios de autobuses regulares, recorridos fijos o servicios programados",
+                        "Descripcion": "SERVICIO DE TRANSPORTE ESCOLAR, PARA LA COMUNA DE FRESIA, LINEA 5 DE LAS BASES DE LICITACION.",
+                        "UnidadMedida": "Unidad",
+                        "Cantidad": 1.0,
+                        "Adjudicacion": {
+                            "RutProveedor": "76.246.755-0",
+                            "NombreProveedor": "DISTRIBUIDORA MARCOS EL 46 S. A.",
+                            "Cantidad": 194.0,
+                            "MontoUnitario": 57013.0
+                        }
+                    }, {
+                        "Correlativo": 6,
+                        "CodigoProducto": 78111802,
+                        "CodigoCategoria": "78111800",
+                        "Categoria": "Servicios de transporte, almacenaje y correo / Transporte de pasajeros / Transporte de pasajeros por carretera",
+                        "NombreProducto": "Servicios de autobuses regulares, recorridos fijos o servicios programados",
+                        "Descripcion": "SERVICIO DE TRANSPORTE ESCOLAR, PARA LA COMUNA DE FRESIA, LINEA 6 DE LAS BASES DE LICITACION.",
+                        "UnidadMedida": "Unidad",
+                        "Cantidad": 1.0,
+                        "Adjudicacion": null
+                    }, {
+                        "Correlativo": 7,
+                        "CodigoProducto": 78111802,
+                        "CodigoCategoria": "78111800",
+                        "Categoria": "Servicios de transporte, almacenaje y correo / Transporte de pasajeros / Transporte de pasajeros por carretera",
+                        "NombreProducto": "Servicios de autobuses regulares, recorridos fijos o servicios programados",
+                        "Descripcion": "SERVICIO DE TRANSPORTE ESCOLAR, PARA LA COMUNA DE FRESIA, LINEA 7 DE LAS BASES DE LICITACION.",
+                        "UnidadMedida": "Unidad",
+                        "Cantidad": 1.0,
+                        "Adjudicacion": {
+                            "RutProveedor": "8.641.985-8",
+                            "NombreProveedor": "IVÁN RENÉ MANSILLA IGOR",
+                            "Cantidad": 178.9982,
+                            "MontoUnitario": 57900.0
+                        }
+                    }, {
+                        "Correlativo": 8,
+                        "CodigoProducto": 78111802,
+                        "CodigoCategoria": "78111800",
+                        "Categoria": "Servicios de transporte, almacenaje y correo / Transporte de pasajeros / Transporte de pasajeros por carretera",
+                        "NombreProducto": "Servicios de autobuses regulares, recorridos fijos o servicios programados",
+                        "Descripcion": "SERVICIO DE TRANSPORTE ESCOLAR, PARA LA COMUNA DE FRESIA, LINEA 8 DE LAS BASES DE LICITACION.",
+                        "UnidadMedida": "Unidad",
+                        "Cantidad": 1.0,
+                        "Adjudicacion": {
+                            "RutProveedor": "12.151.326-9",
+                            "NombreProveedor": "RODRIGO GONZALO OYARZO GOMEZ",
+                            "Cantidad": 84.0,
+                            "MontoUnitario": 120000.0
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
