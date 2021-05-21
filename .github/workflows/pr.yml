@@ -13,3 +13,46 @@ jobs:
                   php-version: 7.4
             - run: composer install --prefer-dist --no-progress --no-suggest
             - run: vendor/bin/phpinsights -n --ansi --format=github-action
+    laravel-tests:
+        name: Laravel Tests
+        runs-on: ubuntu-latest
+        services:
+            mysql:
+                image: mysql:5.7
+                env:
+                    MYSQL_DATABASE: database_ci
+                    MYSQL_USER: user
+                    MYSQL_PASSWORD: secret
+                    MYSQL_ROOT_PASSWORD: secretroot
+                ports:
+                    - 33306:3306
+                options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        steps:
+            - uses: actions/checkout@v2
+            - uses: shivammathur/setup-php@v1
+              with:
+                  php-version: 7.4
+            - name: Copy ENV Laravel Configuration for CI
+              run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+            - name: Verify MySQL connection
+              run: |
+                mysql --version
+                sudo apt-get install -y mysql-client
+                mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uuser -psecret -e "SHOW DATABASES"
+            - run: composer install --prefer-dist --no-progress --no-suggest
+            - name: Migrate database
+              env:
+                DB_USERNAME: user
+                DB_PASSWORD: secret
+                DB_DATABASE: database_ci
+                DB_PORT: ${{ job.services.mysql.ports[3306] }}
+              run: |
+                php artisan migrate
+                php artisan db:seed
+            - name: Execute tests (Unit and Feature tests) via PHPUnit
+              env:
+                DB_USERNAME: user
+                DB_PASSWORD: secret
+                DB_DATABASE: database_ci
+                DB_PORT: ${{ job.services.mysql.ports[3306] }}
+              run: php artisan test
