@@ -42,6 +42,6 @@ jobs:
               run: |
                 mysql --version
                 php artisan migrate
-                php artisan db:seed
+                php artisan db:seed -n
             - name: Execute tests (Unit and Feature tests) via PHPUnit
               run: php artisan test
