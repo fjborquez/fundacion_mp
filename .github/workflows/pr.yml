@@ -40,7 +40,7 @@ jobs:
             - run: composer install --prefer-dist --no-progress --no-suggest
             - name: Migrate database
               run: |
-                mysql --version
                 php artisan migrate
+                php artisan db:seed
             - name: Execute tests (Unit and Feature tests) via PHPUnit
               run: php artisan test
