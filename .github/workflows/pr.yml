@@ -50,4 +50,9 @@ jobs:
                 php artisan migrate
                 php artisan db:seed
             - name: Execute tests (Unit and Feature tests) via PHPUnit
+              env:
+                DB_USERNAME: user
+                DB_PASSWORD: secret
+                DB_DATABASE: database_ci
+                DB_PORT: ${{ job.services.mysql.ports[3306] }}
               run: php artisan test
