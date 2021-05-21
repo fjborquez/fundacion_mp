@@ -4,7 +4,7 @@ namespace App\Services\MercadoPublico;
 
 use App\Services\MercadoPublico\Clients\MercadoPublicoHttpClient;
 use App\Services\MercadoPublico\Filtros\FiltroNombreLicitacionExcluidosCategoria;
-use App\Services\MercadoPublico\Filtros\FiltroPalabraExcluidasNombreLicitacion;
+use App\Services\MercadoPublico\Filtros\FiltroPalabrasExcluidasNombreLicitacion;
 use App\Services\MercadoPublico\Filtros\FiltroTipoLicitacion;
 use App\Services\MercadoPublico\Helpers\CsvHelper;
 use App\Services\MercadoPublico\Helpers\EtlHelper;
@@ -42,7 +42,7 @@ class MercadoPublicoETL {
         $this->filtros = [
             'premodificadores' => [
                 new FiltroTipoLicitacion(),
-                new FiltroPalabraExcluidasNombreLicitacion(),
+                new FiltroPalabrasExcluidasNombreLicitacion(),
             ],
             'postmodificadores' => [
                 new FiltroNombreLicitacionExcluidosCategoria(),

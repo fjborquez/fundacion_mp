@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Services\MercadoPublico\Filtros\FiltroPalabraExcluidasNombreLicitacion;
+use App\Services\MercadoPublico\Filtros\FiltroPalabrasExcluidasNombreLicitacion;
 use ErrorException;
 use Tests\TestCase;
 
@@ -44,7 +44,7 @@ class FiltroPalabrasExcluidasNombreLicitacionTest extends TestCase
      */
     public function test_Should_ReturnTrue_When_NombreLicitacionIsNotExcludedAndLower()
     {
-        $modificador = new FiltroPalabraExcluidasNombreLicitacion();
+        $modificador = new FiltroPalabrasExcluidasNombreLicitacion();
         $this->licitacionSinNombreExcluido['Nombre'] = strtolower($this->licitacionSinNombreExcluido['Nombre']);
         $modificadorReturn = $modificador->ejecutar($this->licitacionSinNombreExcluido);
         
@@ -59,7 +59,7 @@ class FiltroPalabrasExcluidasNombreLicitacionTest extends TestCase
      */
     public function test_Should_ReturnFalse_When_NombreLicitacionIsExcludedAndLower()
     {
-        $modificador = new FiltroPalabraExcluidasNombreLicitacion();
+        $modificador = new FiltroPalabrasExcluidasNombreLicitacion();
         $this->licitacionConNombreExcluido['Nombre'] = strtolower($this->licitacionConNombreExcluido['Nombre']);
         $modificadorReturn = $modificador->ejecutar($this->licitacionConNombreExcluido);
 
@@ -69,7 +69,7 @@ class FiltroPalabrasExcluidasNombreLicitacionTest extends TestCase
 
     public function test_Should_ReturnTrue_When_NombreLicitacionIsExcludedAndUpper()
     {
-        $modificador = new FiltroPalabraExcluidasNombreLicitacion();
+        $modificador = new FiltroPalabrasExcluidasNombreLicitacion();
         $this->licitacionSinNombreExcluido['Nombre'] = strtoupper($this->licitacionSinNombreExcluido['Nombre']);
         $modificadorReturn = $modificador->ejecutar($this->licitacionSinNombreExcluido);
 
