@@ -72,7 +72,7 @@ class ModificadorAreaSector extends Modificador {
                 $licitacion['area'] = $categoria['area'];
                 $licitacion['sector'] = $categoria['sector'];
     
-                return $licitacion;
+                return true;
             }
         }
         
