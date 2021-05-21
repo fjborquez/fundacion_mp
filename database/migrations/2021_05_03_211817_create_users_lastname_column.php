@@ -14,7 +14,7 @@ class CreateUsersLastnameColumn extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('lastname')->after('name');
+            $table->string('lastname')->nullable()->after('name');
         });
     }
 
