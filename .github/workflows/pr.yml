@@ -32,6 +32,8 @@ jobs:
             - uses: shivammathur/setup-php@v1
               with:
                   php-version: 7.4
+              name: Copy ENV Laravel Configuration for CI
+              run: php -r "file_exists('.env') || copy('.env.example', '.env');"
             - name: Verify MySQL connection
               run: |
                 mysql --version
