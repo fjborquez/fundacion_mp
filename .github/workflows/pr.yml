@@ -41,6 +41,11 @@ jobs:
                 mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uuser -psecret -e "SHOW DATABASES"
             - run: composer install --prefer-dist --no-progress --no-suggest
             - name: Migrate database
+              env:
+                DB_USERNAME: user
+                DB_PASSWORD: secret
+                DB_DATABASE: database_ci
+                DB_PORT: ${{ job.services.mysql.ports[3306] }}
               run: |
                 php artisan migrate
                 php artisan db:seed
