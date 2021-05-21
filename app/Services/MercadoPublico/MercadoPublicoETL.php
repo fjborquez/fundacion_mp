@@ -120,6 +120,6 @@ class MercadoPublicoETL {
 
         $etl->process($licitaciones);
         
-        return $licitacionesProcesadas;
+        return $licitacionesProcesadas
     }
 }
