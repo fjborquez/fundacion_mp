@@ -13,6 +13,7 @@ class AdminConfiguracionesController extends Controller
         return view('configuraciones', [
             'settings' => [
                 'filtro_tipo_licitacion' => $etlSettings->filtro_tipo_licitacion,
+                'filtro_region_comprador' => $etlSettings->filtro_region_comprador,
                 'filtro_palabras_excluidas' => $etlSettings->filtro_palabras_excluidas,
                 'filtro_palabras_incluidas' => $etlSettings->filtro_palabras_incluidas,
                 'filtro_palabras_clave_educacion' => $etlSettings->filtro_palabras_clave_educacion,
