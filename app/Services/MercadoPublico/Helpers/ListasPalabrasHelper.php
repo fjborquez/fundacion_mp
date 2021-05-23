@@ -13,6 +13,7 @@ class ListasPalabrasHelper {
 
     public function generarListasPalabras() {
         $listaTipoLicitacionPermitidos = explode(';', $this->etlSettings->filtro_tipo_licitacion);
+        $listaRegionComprador = explode(';', $this->etlSettings->filtro_region_comprador);
         $listaPalabrasExcluidas = explode(';', $this->etlSettings->filtro_palabras_excluidas);
         $listaPalabrasIncluidas = explode(';', $this->etlSettings->filtro_palabras_incluidas);
         $listaPalabrasClaveEducacion = explode(';', $this->etlSettings->filtro_palabras_clave_educacion);
@@ -35,6 +36,7 @@ class ListasPalabrasHelper {
 
         return [
             'listaTipoLicitacionPermitidos' => $listaTipoLicitacionPermitidos,
+            'listaRegionComprador' => $listaRegionComprador,
             'listaPalabrasExcluidas' => $listaPalabrasExcluidas,
             'listaPalabrasIncluidas' => $listaPalabrasIncluidas,
             'educacion' => $listaPalabrasClaveEducacion,
