@@ -14,6 +14,7 @@ class ListasPalabrasHelper {
     public function generarListasPalabras() {
         $listaTipoLicitacionPermitidos = explode(';', $this->etlSettings->filtro_tipo_licitacion);
         $listaPalabrasExcluidas = explode(';', $this->etlSettings->filtro_palabras_excluidas);
+        $listaPalabrasIncluidas = explode(';', $this->etlSettings->filtro_palabras_incluidas);
         $listaPalabrasClaveEducacion = explode(';', $this->etlSettings->filtro_palabras_clave_educacion);
         $listaPalabrasClaveIndustriaCreativa = explode(';', $this->etlSettings->filtro_palabras_clave_industria_creativa);
         $listaPalabrasClaveTurismo = explode(';', $this->etlSettings->filtro_palabras_clave_turismo);
@@ -35,6 +36,7 @@ class ListasPalabrasHelper {
         return [
             'listaTipoLicitacionPermitidos' => $listaTipoLicitacionPermitidos,
             'listaPalabrasExcluidas' => $listaPalabrasExcluidas,
+            'listaPalabrasIncluidas' => $listaPalabrasIncluidas,
             'educacion' => $listaPalabrasClaveEducacion,
             'industriaCreativa' => $listaPalabrasClaveIndustriaCreativa,
             'turismo' => $listaPalabrasClaveTurismo,
