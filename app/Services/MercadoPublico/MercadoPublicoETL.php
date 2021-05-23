@@ -86,7 +86,7 @@ class MercadoPublicoETL {
         $etl = EtlBuilder::init()
             ->transformWith(function($item) {
                 array_walk_recursive($item, function (&$value) {
-                    $value = mb_convert_encoding(Str::lower($value), 'UTF-8');
+                    $value = trim(mb_convert_encoding(Str::lower($value), 'UTF-8'));
                 });
         
                 yield $item;

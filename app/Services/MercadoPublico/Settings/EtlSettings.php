@@ -6,6 +6,8 @@ use Spatie\LaravelSettings\Settings;
 
 class EtlSettings extends Settings {
     public string $filtro_tipo_licitacion;
+    public string $filtro_region_comprador;
+    public string $filtro_palabras_incluidas;
     public string $filtro_palabras_excluidas;
     public string $filtro_palabras_clave_educacion;
     public string $filtro_palabras_clave_industria_creativa;
