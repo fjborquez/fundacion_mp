@@ -14,6 +14,7 @@ class AdminConfiguracionesController extends Controller
             'settings' => [
                 'filtro_tipo_licitacion' => $etlSettings->filtro_tipo_licitacion,
                 'filtro_palabras_excluidas' => $etlSettings->filtro_palabras_excluidas,
+                'filtro_palabras_incluidas' => $etlSettings->filtro_palabras_incluidas,
                 'filtro_palabras_clave_educacion' => $etlSettings->filtro_palabras_clave_educacion,
                 'filtro_palabras_clave_industria_creativa' => $etlSettings->filtro_palabras_clave_industria_creativa,
                 'filtro_palabras_clave_turismo' => $etlSettings->filtro_palabras_clave_turismo,
