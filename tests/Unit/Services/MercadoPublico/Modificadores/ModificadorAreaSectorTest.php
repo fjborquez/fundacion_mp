@@ -10,12 +10,14 @@ class ModificadorAreaSectorTest extends TestCase
 {
     protected $licitacionConAdjudicacionesNulas;
     protected $licitacionSinAdjudicacionesNulas;
+    protected $licitacionSinDescripcionExcluida;
 
     public function setUp(): void
     {
         parent::setUp();
         $this->setUpLicitacionConAdjudicacionesNulas();
         $this->setUpLicitacionSinAdjudicacionesNulas();
+        $this->setUpLicitacionSinDescripcionExcluida();
     }
 
     private function setUpLicitacionConAdjudicacionesNulas()
@@ -28,6 +30,12 @@ class ModificadorAreaSectorTest extends TestCase
     {
         $path = storage_path("testing/json/licitacion_sin_adjudicaciones_nulas.json");
         $this->openLicitacion($path, $this->licitacionSinAdjudicacionesNulas);
+    }
+
+    private function setUpLicitacionSinDescripcionExcluida()
+    {
+        $path = storage_path("testing/json/licitacion_descripcion_no_excluida.json");
+        $this->openLicitacion($path, $this->licitacionSinDescripcionExcluida);
     }
 
     private function openLicitacion($path, &$licitacion)
@@ -97,5 +105,62 @@ class ModificadorAreaSectorTest extends TestCase
         unset($this->licitacionSinAdjudicacionesNulas['Nombre']);
 
         $modificadorReturn = $modificador->ejecutar($this->licitacionSinAdjudicacionesNulas);
+    }
+
+    public function test_Should_ReturnTrueAndAddAreaAndSector_When_LicitacionHasDescriptionToLower()
+    {
+        $modificador = new ModificadorAreaSector();
+        $this->licitacionSinDescripcionExcluida['Descripcion'] = strtolower($this->licitacionSinDescripcionExcluida['Descripcion']);
+
+        $modificadorReturn = $modificador->ejecutar($this->licitacionSinDescripcionExcluida);
+        
+        $this->assertTrue($modificadorReturn);
+        $this->assertArrayHasKey('area', $this->licitacionSinDescripcionExcluida);
+        $this->assertArrayHasKey('sector', $this->licitacionSinDescripcionExcluida);
+    }
+
+    /**
+     * A basic unit test example.
+     *
+     * @return void
+     */
+    public function test_Should_ReturnFalse_When_LicitacionHasDescriptionToUpper()
+    {
+        $modificador = new ModificadorAreaSector();
+        $this->licitacionSinDescripcionExcluida['Descripcion'] = strtoupper($this->licitacionSinDescripcionExcluida['Descripcion']);
+
+        $modificadorReturn = $modificador->ejecutar($this->licitacionSinDescripcionExcluida);
+        
+        $this->assertFalse($modificadorReturn);
+    }
+
+    /**
+     * A basic unit test example.
+     *
+     * @return void
+     */
+    public function test_Should_ReturnFalse_When_LicitacionHasEmptyDescription()
+    {
+        $modificador = new ModificadorAreaSector();
+        $this->licitacionSinDescripcionExcluida['Descripcion'] = '';
+
+        $modificadorReturn = $modificador->ejecutar($this->licitacionSinDescripcionExcluida);
+        
+        $this->assertFalse($modificadorReturn);
+    }
+
+    /**
+     * A basic unit test example.
+     *
+     * @return void
+     */
+    public function test_Should_ThrowErrorException_When_LicitacionNotHasDescription()
+    {
+        $this->expectException(ErrorException::class);
+
+        $modificador = new ModificadorAreaSector();
+        unset($this->licitacionSinDescripcionExcluida['Descripcion']);
+
+        $modificadorReturn = $modificador->ejecutar($this->licitacionSinDescripcionExcluida);
     }
 }
