@@ -23,6 +23,7 @@ use BenTools\ETL\EtlBuilder;
 use BenTools\ETL\EventDispatcher\Event\EndProcessEvent;
 use BenTools\ETL\EventDispatcher\Event\ItemExceptionEvent;
 use Carbon\Carbon;
+use CodeInc\StripAccents\StripAccents;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -77,7 +78,8 @@ class MercadoPublicoETL {
         $licitacionesProcesadas = [];
         $licitacionesConProblemas = [];
         $mercadoPublicoHttpClient = new MercadoPublicoHttpClient();
-        $fecha = Carbon::yesterday()->format('dmY');
+        //$fecha = Carbon::yesterday()->format('dmY');
+        $fecha = '07032021';
         $licitaciones = $mercadoPublicoHttpClient->obtenerLicitacionesConDetalles($fecha);
         
         Log::info('Enviar licitaciones a Salesforce: ' . var_export($sendToSalesforce, true));
@@ -86,7 +88,7 @@ class MercadoPublicoETL {
         $etl = EtlBuilder::init()
             ->transformWith(function($item) {
                 array_walk_recursive($item, function (&$value) {
-                    $value = trim(mb_convert_encoding(Str::lower($value), 'UTF-8'));
+                    $value = trim(StripAccents::strip(mb_convert_encoding(Str::lower($value), 'UTF-8')));
                 });
         
                 yield $item;
