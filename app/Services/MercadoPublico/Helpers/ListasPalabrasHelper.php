@@ -3,6 +3,7 @@
 namespace App\Services\MercadoPublico\Helpers;
 
 use App\Services\MercadoPublico\Settings\EtlSettings;
+use CodeInc\StripAccents\StripAccents;
 
 class ListasPalabrasHelper {
     private $etlSettings;
@@ -12,27 +13,27 @@ class ListasPalabrasHelper {
     }
 
     public function generarListasPalabras() {
-        $listaTipoLicitacionPermitidos = explode(';', $this->etlSettings->filtro_tipo_licitacion);
-        $listaRegionComprador = explode(';', $this->etlSettings->filtro_region_comprador);
-        $listaPalabrasExcluidas = explode(';', $this->etlSettings->filtro_palabras_excluidas);
-        $listaPalabrasIncluidas = explode(';', $this->etlSettings->filtro_palabras_incluidas);
-        $listaPalabrasClaveEducacion = explode(';', $this->etlSettings->filtro_palabras_clave_educacion);
-        $listaPalabrasClaveIndustriaCreativa = explode(';', $this->etlSettings->filtro_palabras_clave_industria_creativa);
-        $listaPalabrasClaveTurismo = explode(';', $this->etlSettings->filtro_palabras_clave_turismo);
-        $listaPalabrasClaveEspacioPublico = explode(';', $this->etlSettings->filtro_palabras_clave_espacio_publico);
-        $listaPalabrasClaveDiseño = explode(';', $this->etlSettings->filtro_palabras_clave_diseño);
-        $listaPalabrasClaveVialidad = explode(';', $this->etlSettings->filtro_palabras_clave_vialidad);
-        $listaPalabrasClaveObrasPublicas = explode(';', $this->etlSettings->filtro_palabras_clave_obras_publicas);
-        $listaPalabrasClaveSalud = explode(';', $this->etlSettings->filtro_palabras_clave_salud);
-        $listaPalabrasClaveInclusion = explode(';', $this->etlSettings->filtro_palabras_clave_inclusion);
-        $listaPalabrasClaveAgua = explode(';', $this->etlSettings->filtro_palabras_clave_agua);
-        $listaPalabrasClaveApr = explode(';', $this->etlSettings->filtro_palabras_clave_apr);
-        $listaPalabrasClaveSistemasAlimentarios = explode(';', $this->etlSettings->filtro_palabras_clave_sistemas_alimentarios);
-        $listaPalabrasClaveProduccionSostenible = explode(';', $this->etlSettings->filtro_palabras_clave_produccion_sostenible);
-        $listaPalabrasClaveEficienciaEnergetica = explode(';', $this->etlSettings->filtro_palabras_clave_eficiencia_energetica);
-        $listaPalabrasExcluidasEducacionYCultura = explode(';', $this->etlSettings->filtro_palabras_excluidas_educacion_y_cultura);
-        $listaPalabrasExcluidasDesarrolloSocial = explode(';', $this->etlSettings->filtro_palabras_excluidas_desarrollo_social);
-        $listaPalabrasExcluidasMedioAmbiente = explode(';', $this->etlSettings->filtro_palabras_excluidas_medio_ambiente);
+        $listaTipoLicitacionPermitidos = explode(';', StripAccents::strip($this->etlSettings->filtro_tipo_licitacion));
+        $listaRegionComprador = explode(';', StripAccents::strip($this->etlSettings->filtro_region_comprador));
+        $listaPalabrasExcluidas = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_excluidas));
+        $listaPalabrasIncluidas = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_incluidas));
+        $listaPalabrasClaveEducacion = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_educacion));
+        $listaPalabrasClaveIndustriaCreativa = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_industria_creativa));
+        $listaPalabrasClaveTurismo = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_turismo));
+        $listaPalabrasClaveEspacioPublico = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_espacio_publico));
+        $listaPalabrasClaveDiseño = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_diseño));
+        $listaPalabrasClaveVialidad = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_vialidad));
+        $listaPalabrasClaveObrasPublicas = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_obras_publicas));
+        $listaPalabrasClaveSalud = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_salud));
+        $listaPalabrasClaveInclusion = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_inclusion));
+        $listaPalabrasClaveAgua = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_agua));
+        $listaPalabrasClaveApr = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_apr));
+        $listaPalabrasClaveSistemasAlimentarios = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_sistemas_alimentarios));
+        $listaPalabrasClaveProduccionSostenible = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_produccion_sostenible));
+        $listaPalabrasClaveEficienciaEnergetica = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_eficiencia_energetica));
+        $listaPalabrasExcluidasEducacionYCultura = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_excluidas_educacion_y_cultura));
+        $listaPalabrasExcluidasDesarrolloSocial = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_excluidas_desarrollo_social));
+        $listaPalabrasExcluidasMedioAmbiente = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_excluidas_medio_ambiente));
 
         return [
             'listaTipoLicitacionPermitidos' => $listaTipoLicitacionPermitidos,

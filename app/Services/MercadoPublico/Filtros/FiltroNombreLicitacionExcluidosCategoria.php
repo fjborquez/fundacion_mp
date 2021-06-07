@@ -15,7 +15,8 @@ class FiltroNombreLicitacionExcluidosCategoria extends Filtro {
 
         foreach ($exclusiones as $index => $excluidas) {
             if ($licitacion['area'] === $index 
-                && Str::of($licitacion['Nombre'])->contains($this->listasPalabras[$excluidas])) {
+                && (Str::of($licitacion['Nombre'])->contains($this->listasPalabras[$excluidas]) || 
+                Str::of($licitacion['Descripcion'])->contains($this->listasPalabras[$excluidas]))) {
                 return false;
             }
         }

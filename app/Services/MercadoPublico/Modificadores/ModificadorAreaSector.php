@@ -68,7 +68,8 @@ class ModificadorAreaSector extends Modificador {
         ];
 
         foreach ($categorias as $indice => $categoria) {
-            if (Str::of($licitacion['Nombre'])->contains($this->listasPalabras[$indice])) {
+            if (Str::of($licitacion['Nombre'])->contains($this->listasPalabras[$indice]) || 
+                Str::of($licitacion['Descripcion'])->contains($this->listasPalabras[$indice])) {
                 $licitacion['area'] = $categoria['area'];
                 $licitacion['sector'] = $categoria['sector'];
     

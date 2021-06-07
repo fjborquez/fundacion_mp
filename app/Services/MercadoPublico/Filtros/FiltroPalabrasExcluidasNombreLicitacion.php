@@ -7,7 +7,8 @@ use Illuminate\Support\Str;
 
 class FiltroPalabrasExcluidasNombreLicitacion extends Filtro {
     public function ejecutar($licitacion) {
-        if (Str::of($licitacion['Nombre'])->contains($this->listasPalabras['listaPalabrasExcluidas'])) {
+        if (Str::of($licitacion['Nombre'])->contains($this->listasPalabras['listaPalabrasExcluidas']) || 
+            Str::of($licitacion['Descripcion'])->contains($this->listasPalabras['listaPalabrasExcluidas'])) {
             return false;
         }
 
