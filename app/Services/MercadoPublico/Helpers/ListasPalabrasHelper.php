@@ -28,6 +28,7 @@ class ListasPalabrasHelper {
         $listaPalabrasClaveInclusion = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_inclusion));
         $listaPalabrasClaveAgua = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_agua));
         $listaPalabrasClaveApr = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_apr));
+        $listaPalabrasClaveClimatizacion = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_climatizacion));
         $listaPalabrasClaveSistemasAlimentarios = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_sistemas_alimentarios));
         $listaPalabrasClaveProduccionSostenible = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_produccion_sostenible));
         $listaPalabrasClaveEficienciaEnergetica = explode(';', StripAccents::strip($this->etlSettings->filtro_palabras_clave_eficiencia_energetica));
@@ -51,6 +52,7 @@ class ListasPalabrasHelper {
             'inclusion' => $listaPalabrasClaveInclusion,
             'agua' => $listaPalabrasClaveAgua,
             'apr' => $listaPalabrasClaveApr,
+            'climatizacion' => $listaPalabrasClaveClimatizacion,
             'sistemaAlimentarios' => $listaPalabrasClaveSistemasAlimentarios,
             'produccionSostenible' => $listaPalabrasClaveProduccionSostenible,
             'eficienciaEnergetica' => $listaPalabrasClaveEficienciaEnergetica,

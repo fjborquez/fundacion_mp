@@ -25,6 +25,7 @@ class EtlSettings extends Settings {
     public string $filtro_palabras_clave_sistemas_alimentarios;
     public string $filtro_palabras_clave_produccion_sostenible;
     public string $filtro_palabras_clave_eficiencia_energetica;
+    public string $filtro_palabras_clave_climatizacion;
     public string $filtro_palabras_excluidas_medio_ambiente;
 
     public string $cron_tarea_automatica;
