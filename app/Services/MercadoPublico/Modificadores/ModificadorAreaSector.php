@@ -65,6 +65,10 @@ class ModificadorAreaSector extends Modificador {
                 'area' => 'medio ambiente',
                 'sector' => 'eficiencia energética',
             ],
+            'climatizacion' => [
+                'area' => 'medio ambiente',
+                'sector' => 'climatización',
+            ],
         ];
 
         foreach ($categorias as $indice => $categoria) {

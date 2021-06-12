@@ -34,6 +34,7 @@ class AdminConfiguracionesController extends Controller
                 'filtro_palabras_clave_sistemas_alimentarios' => StripAccents::strip($etlSettings->filtro_palabras_clave_sistemas_alimentarios),
                 'filtro_palabras_clave_produccion_sostenible' => StripAccents::strip($etlSettings->filtro_palabras_clave_produccion_sostenible),
                 'filtro_palabras_clave_eficiencia_energetica' => StripAccents::strip($etlSettings->filtro_palabras_clave_eficiencia_energetica),
+                'filtro_palabras_clave_climatizacion' => StripAccents::strip($etlSettings->filtro_palabras_clave_climatizacion),
                 'filtro_palabras_excluidas_medio_ambiente' => StripAccents::strip($etlSettings->filtro_palabras_excluidas_medio_ambiente),
             ]
         ]);
