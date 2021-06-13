@@ -34,25 +34,11 @@ class MercadoPublicoETL {
         $this->csvHelper = new CsvHelper();
         $this->classLoaderHelper = new ClassLoaderHelper();
         $this->filtros = [
-            'premodificadores' => $this->classLoaderHelper->loadClasses([
-                'FiltroTipoLicitacion', 
-                'FiltroPalabrasExcluidasNombreLicitacion'
-            ], 'App\\Services\\MercadoPublico\\Filtros\\'), 
-            'postmodificadores' => $this->classLoaderHelper->loadClasses([
-                'FiltroNombreLicitacionExcluidosCategoria'
-            ], 'App\\Services\\MercadoPublico\\Filtros\\'),
+            'premodificadores' => $this->classLoaderHelper->loadClasses($this->classLoaderHelper->getClasses('premodificadores'), 'App\\Services\\MercadoPublico\\Filtros\\'), 
+            'postmodificadores' => $this->classLoaderHelper->loadClasses($this->classLoaderHelper->getClasses('postmodificadores'), 'App\\Services\\MercadoPublico\\Filtros\\'),
         ];
-        $this->modificadores = $this->classLoaderHelper->loadClasses([
-            'ModificadorAreaSector', 
-            'ModificadorQuitarAdjudicacionesNulas', 
-            'ModificadorFormatoRutAdjudicacion', 
-            'ModificadorMontoTotal', 
-            'ModificadorTramoMonto'
-        ], 'App\\Services\\MercadoPublico\\Modificadores\\');
-        $this->validadores = $this->classLoaderHelper->loadClasses([
-            'ValidadorAdjudicacion', 
-            'ValidadorItems',
-        ], 'App\\Services\\MercadoPublico\\Modificadores\\');
+        $this->modificadores = $this->classLoaderHelper->loadClasses($this->classLoaderHelper->getClasses('modificadores'), 'App\\Services\\MercadoPublico\\Modificadores\\');
+        $this->validadores = $this->classLoaderHelper->loadClasses($this->classLoaderHelper->getClasses('validadores'), 'App\\Services\\MercadoPublico\\Modificadores\\');
     }
 
     public function generarETL($sendToSalesforce = false) {
@@ -71,8 +57,7 @@ class MercadoPublicoETL {
         $licitacionesProcesadas = [];
         $licitacionesConProblemas = [];
         $mercadoPublicoHttpClient = new MercadoPublicoHttpClient();
-        //$fecha = Carbon::yesterday()->format('dmY');
-        $fecha = '07032021';
+        $fecha = Carbon::yesterday()->format('dmY');
         $licitaciones = $mercadoPublicoHttpClient->obtenerLicitacionesConDetalles($fecha);
         
         Log::info('Enviar licitaciones a Salesforce: ' . var_export($sendToSalesforce, true));
