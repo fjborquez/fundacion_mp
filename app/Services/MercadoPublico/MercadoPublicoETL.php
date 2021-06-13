@@ -3,20 +3,11 @@
 namespace App\Services\MercadoPublico;
 
 use App\Services\MercadoPublico\Clients\MercadoPublicoHttpClient;
-use App\Services\MercadoPublico\Filtros\FiltroNombreLicitacionExcluidosCategoria;
-use App\Services\MercadoPublico\Filtros\FiltroPalabrasExcluidasNombreLicitacion;
-use App\Services\MercadoPublico\Filtros\FiltroTipoLicitacion;
+use App\Services\MercadoPublico\Helpers\ClassLoaderHelper;
 use App\Services\MercadoPublico\Helpers\CsvHelper;
 use App\Services\MercadoPublico\Helpers\EtlHelper;
 use App\Services\MercadoPublico\Helpers\SalesforceHelper;
-use App\Services\MercadoPublico\Modificadores\ModificadorAreaSector;
-use App\Services\MercadoPublico\Modificadores\ModificadorFormatoRutAdjudicacion;
-use App\Services\MercadoPublico\Modificadores\ModificadorMontoTotal;
-use App\Services\MercadoPublico\Modificadores\ModificadorQuitarAdjudicacionesNulas;
-use App\Services\MercadoPublico\Modificadores\ModificadorTramoMonto;
 use App\Services\MercadoPublico\Mutex\Mutex;
-use App\Services\MercadoPublico\Validadores\ValidadorAdjudicacion;
-use App\Services\MercadoPublico\Validadores\ValidadorItems;
 
 use BenTools\ETL\Etl;
 use BenTools\ETL\EtlBuilder;
@@ -34,32 +25,20 @@ class MercadoPublicoETL {
     private $filtros;
     private $modificadores;
     private $csvHelper;
+    private $classLoaderHelper;
 
     public function __construct() {
         $this->etlHelper = new EtlHelper();
         $this->mutex = new Mutex();
         $this->salesforceHelper = new SalesforceHelper();
         $this->csvHelper = new CsvHelper();
+        $this->classLoaderHelper = new ClassLoaderHelper();
         $this->filtros = [
-            'premodificadores' => [
-                new FiltroTipoLicitacion(),
-                new FiltroPalabrasExcluidasNombreLicitacion(),
-            ],
-            'postmodificadores' => [
-                new FiltroNombreLicitacionExcluidosCategoria(),
-            ],
+            'premodificadores' => $this->classLoaderHelper->loadClasses($this->classLoaderHelper->getClasses('premodificadores'), 'App\\Services\\MercadoPublico\\Filtros\\'), 
+            'postmodificadores' => $this->classLoaderHelper->loadClasses($this->classLoaderHelper->getClasses('postmodificadores'), 'App\\Services\\MercadoPublico\\Filtros\\'),
         ];
-        $this->modificadores = [
-            new ModificadorAreaSector(),
-            new ModificadorQuitarAdjudicacionesNulas(),
-            new ModificadorFormatoRutAdjudicacion(),
-            new ModificadorMontoTotal(),
-            new ModificadorTramoMonto(),
-        ];
-        $this->validadores = [
-            new ValidadorAdjudicacion(),
-            new ValidadorItems(),
-        ];
+        $this->modificadores = $this->classLoaderHelper->loadClasses($this->classLoaderHelper->getClasses('modificadores'), 'App\\Services\\MercadoPublico\\Modificadores\\');
+        $this->validadores = $this->classLoaderHelper->loadClasses($this->classLoaderHelper->getClasses('validadores'), 'App\\Services\\MercadoPublico\\Modificadores\\');
     }
 
     public function generarETL($sendToSalesforce = false) {
