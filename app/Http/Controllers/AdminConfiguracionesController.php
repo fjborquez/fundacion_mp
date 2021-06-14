@@ -15,9 +15,7 @@ class AdminConfiguracionesController extends Controller
         return view('configuraciones', [
             'settings' => [
                 'filtro_tipo_licitacion' => StripAccents::strip($etlSettings->filtro_tipo_licitacion),
-                'filtro_region_comprador' => StripAccents::strip($etlSettings->filtro_region_comprador),
                 'filtro_palabras_excluidas' => StripAccents::strip($etlSettings->filtro_palabras_excluidas),
-                'filtro_palabras_incluidas' => StripAccents::strip($etlSettings->filtro_palabras_incluidas),
                 'filtro_palabras_clave_educacion' => StripAccents::strip($etlSettings->filtro_palabras_clave_educacion),
                 'filtro_palabras_clave_industria_creativa' => StripAccents::strip($etlSettings->filtro_palabras_clave_industria_creativa),
                 'filtro_palabras_clave_turismo' => StripAccents::strip($etlSettings->filtro_palabras_clave_turismo),
