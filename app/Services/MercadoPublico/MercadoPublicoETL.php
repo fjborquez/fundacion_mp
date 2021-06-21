@@ -57,7 +57,8 @@ class MercadoPublicoETL {
         $licitacionesProcesadas = [];
         $licitacionesConProblemas = [];
         $mercadoPublicoHttpClient = new MercadoPublicoHttpClient();
-        $fecha = Carbon::yesterday()->format('dmY');
+        //$fecha = Carbon::yesterday()->format('dmY');
+        $fecha = '07032021';
         $licitaciones = $mercadoPublicoHttpClient->obtenerLicitacionesConDetalles($fecha);
         
         Log::info('Enviar licitaciones a Salesforce: ' . var_export($sendToSalesforce, true));
@@ -72,23 +73,20 @@ class MercadoPublicoETL {
                 yield $item;
             })
             ->loadInto(
-                function ($generated, $key, Etl $etl) use (&$licitacionesProcesadas, $sendToSalesforce) {
+                function ($generated, $key, Etl $etl) use (&$licitacionesProcesadas) {
                     foreach ($generated as $licitacion) {
                         $this->etlHelper->aplicarValidadores($licitacion, $this->validadores, $etl);
                         $this->etlHelper->aplicarFiltros($licitacion, $this->filtros['premodificadores'], $etl);
                         $this->etlHelper->aplicarModificadores($licitacion, $this->modificadores, $etl);
                         $this->etlHelper->aplicarFiltros($licitacion, $this->filtros['postmodificadores'], $etl);
-                        
-                        // TODO: Pasar a onEnd
-                        if ($sendToSalesforce) {
-                            $this->salesforceHelper->enviarAdjudicacionesASalesforce($licitacion);
-                        }
 
                         $licitacionesProcesadas[] = $licitacion;
                     }
                 })
-            ->onEnd(function(EndProcessEvent $event) use (&$licitacionesProcesadas, &$licitacionesConProblemas, $fecha) {
+            ->onEnd(function(EndProcessEvent $event) use (&$licitacionesProcesadas, &$licitacionesConProblemas, $fecha, $sendToSalesforce) {
                 $this->csvHelper->generarArchivo($licitacionesConProblemas, $fecha);
+                $this->salesforceHelper->enviarLicitacionesASalesforce($licitacionesProcesadas, $sendToSalesforce);
+                
                 Log::info('Ha concluido la ETL con ' . count($licitacionesProcesadas) . ' licitaciones filtradas.');
             })
             ->onLoadException(function(ItemExceptionEvent $exception) use (&$licitacionesConProblemas) {

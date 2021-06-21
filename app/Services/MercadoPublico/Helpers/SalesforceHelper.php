@@ -15,6 +15,14 @@ class SalesforceHelper {
         $this->salesforceSettings = app(SalesforceSettings::class);
     }
 
+    public function enviarLicitacionesASalesforce($licitaciones = [], $sendToSalesforce = false) {
+        if ($sendToSalesforce) {
+            foreach($licitaciones as $licitacion) {
+                $this->enviarAdjudicacionesASalesforce($licitacion);
+            }
+        }
+    }
+
     public function enviarAdjudicacionesASalesforce($licitacion) {
         foreach($licitacion['Items']['Listado'] as $item) {
             $this->enviarAdjudicacionASalesforce($licitacion, $item['Adjudicacion']);
