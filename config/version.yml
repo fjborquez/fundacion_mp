@@ -1,4 +1,4 @@
-mode: 'absorb' # or 'increment'
+mode: 'increment' # or 'increment'
 blade-directive: version
 current:
   label: v
