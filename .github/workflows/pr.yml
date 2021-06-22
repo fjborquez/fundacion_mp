@@ -65,6 +65,7 @@ jobs:
             - uses: shivammathur/setup-php@v1
               with:
                   php-version: 7.4
+            - run: composer install --prefer-dist --no-progress --no-suggest
             - name: Cambiar numero de version
               run: php artisan version:patch
             - name: Crear commit
