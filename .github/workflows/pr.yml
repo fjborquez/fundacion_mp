@@ -11,8 +11,15 @@ jobs:
             - uses: shivammathur/setup-php@v1
               with:
                   php-version: 7.4
+            - name: skip-workflow
+              id: skip-workflow
+              uses: saulmaldonado/skip-workflow@v1
+              with:
+                phrase: 'Cambio de version'
             - run: composer install --prefer-dist --no-progress --no-suggest
-            - run: vendor/bin/phpinsights -n --ansi --format=github-action
+            - name: Ejecutar phpinsights
+              if: ${{ !steps.skip-workflow.outputs.skip }}
+              run: vendor/bin/phpinsights -n --ansi --format=github-action
     laravel-tests:
         name: Laravel Tests
         runs-on: ubuntu-latest
@@ -32,6 +39,11 @@ jobs:
             - uses: shivammathur/setup-php@v1
               with:
                   php-version: 7.4
+            - name: skip-workflow
+              id: skip-workflow
+              uses: saulmaldonado/skip-workflow@v1
+              with:
+                phrase: 'Cambio de version'
             - name: Copy ENV Laravel Configuration for CI
               run: php -r "file_exists('.env') || copy('.env.example', '.env');"
             - name: Verify MySQL connection
@@ -50,10 +62,37 @@ jobs:
                 php artisan migrate
                 php artisan db:seed
             - name: Execute tests (Unit and Feature tests) via PHPUnit
+              if: ${{ !steps.skip-workflow.outputs.skip }}
               env:
                 DB_USERNAME: user
                 DB_PASSWORD: secret
                 DB_DATABASE: database_ci
                 DB_PORT: ${{ job.services.mysql.ports[3306] }}
               run: php artisan test
+    laravel-version:
+        name: Laravel Version
+        runs-on: ubuntu-latest
+        needs: [phpinsights, laravel-tests]
+        steps:
+            - uses: actions/checkout@v2
+            - uses: shivammathur/setup-php@v1
+              with:
+                  php-version: 7.4
+            - name: skip-workflow
+              id: skip-workflow
+              uses: saulmaldonado/skip-workflow@v1
+              with:
+                phrase: 'Cambio de version'
+            - run: composer install --prefer-dist --no-progress --no-suggest
+            - name: Cambiar numero de version
+              if: ${{ !steps.skip-workflow.outputs.skip }}
+              run: php artisan version:patch
+            - name: Crear commit
+              uses: EndBug/add-and-commit@v7
+              if: ${{ !steps.skip-workflow.outputs.skip }}
+              with:
+                author_name: github_action
+                author_email: fborquez@outlook.com
+                message: 'Cambio de version'
+                add: 'config/version.yml'
 
