@@ -65,5 +65,13 @@ jobs:
             - uses: shivammathur/setup-php@v1
               with:
                   php-version: 7.4
-            - run: php artisan version:patch
+            - name: Cambiar numero de version
+              run: php artisan version:patch
+            - name: Crear commit
+              uses: EndBug/add-and-commit@v7
+              with:
+                author_name: github_action
+                author_email: fborquez@outlook.com
+                message: 'Cambio de version'
+                add: 'config/version.yml'
 
