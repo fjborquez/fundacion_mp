@@ -76,4 +76,5 @@ jobs:
                 author_email: fborquez@outlook.com
                 message: 'Cambio de version'
                 add: 'config/version.yml'
+                branch: develop
 
