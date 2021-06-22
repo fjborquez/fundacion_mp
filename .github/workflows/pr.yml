@@ -16,6 +16,7 @@ jobs:
               uses: saulmaldonado/skip-workflow@v1
               with:
                 phrase: 'Cambio de version'
+                github-token: ${{ secrets.GITHUB_TOKEN }}
             - run: composer install --prefer-dist --no-progress --no-suggest
             - name: Ejecutar phpinsights
               if: ${{ !steps.skip-workflow.outputs.skip }}
@@ -44,6 +45,7 @@ jobs:
               uses: saulmaldonado/skip-workflow@v1
               with:
                 phrase: 'Cambio de version'
+                github-token: ${{ secrets.GITHUB_TOKEN }}
             - name: Copy ENV Laravel Configuration for CI
               run: php -r "file_exists('.env') || copy('.env.example', '.env');"
             - name: Verify MySQL connection
@@ -83,6 +85,7 @@ jobs:
               uses: saulmaldonado/skip-workflow@v1
               with:
                 phrase: 'Cambio de version'
+                github-token: ${{ secrets.GITHUB_TOKEN }}
             - run: composer install --prefer-dist --no-progress --no-suggest
             - name: Cambiar numero de version
               if: ${{ !steps.skip-workflow.outputs.skip }}
