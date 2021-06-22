@@ -39,6 +39,7 @@
             <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" />
             <input type="hidden" name="device_name" value="site" />
             <input type="submit" value="Ingresar" class="btn btn-lg btn-primary btn-block" />
+            @version('compact')
         </form>
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
