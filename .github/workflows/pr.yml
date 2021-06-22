@@ -13,7 +13,7 @@ jobs:
                   php-version: 7.4
             - name: skip-workflow
               id: skip-workflow
-              uses: saulmaldonado/skip-workflow@v1
+              uses: saulmaldonado/skip-workflow@master
               with:
                 phrase: 'Cambio de version'
                 github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -42,7 +42,7 @@ jobs:
                   php-version: 7.4
             - name: skip-workflow
               id: skip-workflow
-              uses: saulmaldonado/skip-workflow@v1
+              uses: saulmaldonado/skip-workflow@master
               with:
                 phrase: 'Cambio de version'
                 github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -82,7 +82,7 @@ jobs:
                   php-version: 7.4
             - name: skip-workflow
               id: skip-workflow
-              uses: saulmaldonado/skip-workflow@v1
+              uses: saulmaldonado/skip-workflow@master
               with:
                 phrase: 'Cambio de version'
                 github-token: ${{ secrets.GITHUB_TOKEN }}
