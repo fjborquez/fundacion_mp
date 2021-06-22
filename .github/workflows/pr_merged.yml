@@ -1,12 +1,12 @@
 name: CI
 on:
-  push:
-    branches:
-      - develop
+  pull_request:
+    types: [ closed ]
 
 jobs:
     laravel-version:
         name: Laravel Version
+        if: github.event.pull_request.merged == true
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
