@@ -1,4 +1,4 @@
-mode: increment
+mode: 
 blade-directive: version
 current:
   label: v
