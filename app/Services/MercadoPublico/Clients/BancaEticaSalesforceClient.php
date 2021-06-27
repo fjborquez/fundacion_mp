@@ -28,7 +28,7 @@ class BancaEticaSalesforceClient {
                 'DNI__c' => $account['rut'],
                 'Company' => $account['nombre'],
                 'Area__c' => $account['area'],
-                'Industry' => $account['sector']
+                'Industry' => $account['sector'],
             ],
         ]);
     }
@@ -41,7 +41,7 @@ class BancaEticaSalesforceClient {
                 'DNI__c' => $lead['rut'],
                 'Company' => $lead['proveedor'],
                 'Area__c' => $lead['area'],
-                'Industry' => $lead['sector']
+                'Industry' => $lead['sector'],
             ],
         ]);
     }
@@ -57,7 +57,7 @@ class BancaEticaSalesforceClient {
                 'Company' => $lead['proveedor'],
                 'Address__c' => $lead['direccion'],
                 'Area__c' => $lead['area'],
-                'Industry' => $lead['sector']
+                'Industry' => $lead['sector'],
             ],
         ]);
     }
@@ -77,7 +77,7 @@ class BancaEticaSalesforceClient {
                 'RecordTypeId' => $eventoBiografico['recordTypeId'],
                 'Date__c' => Carbon::parse($eventoBiografico['fecha'])->format('Y-m-d'),
                 'BidAmount__c' => $eventoBiografico['monto'],
-                'Name' => $eventoBiografico['nombreEvento']
+                'Name' => $eventoBiografico['nombreEvento'],
             ],
         ]);
     }

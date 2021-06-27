@@ -5,9 +5,6 @@ namespace App\Services\MercadoPublico\Helpers;
 use App\Services\MercadoPublico\Clients\BancaEticaSalesforceClient;
 use App\Services\MercadoPublico\Settings\SalesforceSettings;
 
-use DomainException;
-use Illuminate\Support\Arr;
-
 class SalesforceHelper {
     private $salesforceSettings;
 

@@ -14,7 +14,7 @@ class Mutex {
     }
 
     public function bloquear() {
-        if (!flock($this->file, LOCK_EX | LOCK_NB)) {
+        if (! flock($this->file, LOCK_EX | LOCK_NB)) {
             fclose($this->file);
             throw new RuntimeException('Una ejecución del proceso ya está en curso');
         }
