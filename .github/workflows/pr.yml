@@ -6,6 +6,7 @@ jobs:
     phpinsights:
         runs-on: ubuntu-latest
         name: PHP Insights checks
+        needs: laravel-version
         steps:
             - uses: actions/checkout@v2
             - uses: shivammathur/setup-php@v1
@@ -15,6 +16,7 @@ jobs:
             - run: vendor/bin/phpinsights -n --ansi --format=github-action
     laravel-tests:
         name: Laravel Tests
+        needs: laravel-version
         runs-on: ubuntu-latest
         services:
             mysql:
