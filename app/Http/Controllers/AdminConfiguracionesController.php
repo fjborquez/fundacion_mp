@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Services\MercadoPublico\Settings\EtlSettings;
-
 use CodeInc\StripAccents\StripAccents;
 use Illuminate\Http\Request;
-
 
 class AdminConfiguracionesController extends Controller 
 {

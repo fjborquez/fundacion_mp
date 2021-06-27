@@ -88,6 +88,28 @@
       'Forrest' => 'Omniphx\\Forrest\\Providers\\Laravel\\Facades\\Forrest',
     ),
   ),
+  'pragmarx/version' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'PragmaRX\\Version\\Package\\ServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Version' => 'PragmaRX\\Version\\Package\\Facade',
+    ),
+  ),
+  'pragmarx/yaml' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'PragmaRX\\Yaml\\Package\\ServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Yaml' => 'PragmaRX\\Yaml\\Package\\Facade',
+    ),
+  ),
   'spatie/laravel-settings' => 
   array (
     'providers' => 

@@ -9,7 +9,7 @@ class ModificadorQuitarAdjudicacionesNulas extends Modificador {
         $adjudicaciones = $licitacion['Items']['Listado'];
 
         foreach($licitacion['Items']['Listado'] as $key => $item) {
-            if (!is_array($item['Adjudicacion'])) {
+            if (! is_array($item['Adjudicacion'])) {
                 unset($adjudicaciones[$key]);
                 $licitacion['Items']['Cantidad']--;
             }
