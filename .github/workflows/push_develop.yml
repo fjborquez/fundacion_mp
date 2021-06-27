@@ -10,6 +10,8 @@ jobs:
         name: Incrementar minor version laravel
         steps:
             - uses: actions/checkout@v2
+              with:
+                token: ${{ secrets.TOKEN_FIKO }}
             - uses: shivammathur/setup-php@v1
               with:
                   php-version: 7.4
