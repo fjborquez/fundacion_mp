@@ -17,8 +17,8 @@ jobs:
             - run: php artisan version:minor
             - name: Commit changes
               uses: EndBug/add-and-commit@v7
-              push: --force
               with:
                 default_author: github_actions
                 message: 'Cambio de version'
                 add: 'config/version.yml'
+                push: --force
