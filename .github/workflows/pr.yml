@@ -56,3 +56,19 @@ jobs:
                 DB_DATABASE: database_ci
                 DB_PORT: ${{ job.services.mysql.ports[3306] }}
               run: php artisan test
+    laravel-version:
+        runs-on: ubuntu-latest
+        name: Incrementar minor version laravel
+        steps:
+            - uses: actions/checkout@v2
+            - uses: shivammathur/setup-php@v1
+              with:
+                  php-version: 7.4
+            - run: composer install --prefer-dist --no-progress --no-suggest
+            - run: php artisan version:minor
+            - name: Commit changes
+                uses: EndBug/add-and-commit@v7
+                with:
+                  default_author: github_actions
+                  message: 'Cambio de version'
+                  add: 'config/version.yml'
