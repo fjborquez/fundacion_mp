@@ -11,13 +11,20 @@ jobs:
         steps:
             - uses: actions/checkout@v2
               with:
-                token: ${{ secrets.TOKEN_FIK }}
+                token: ${{ secrets.TOKEN_FIKO }}
             - uses: shivammathur/setup-php@v1
               with:
                   php-version: 7.4
+            - name: skip-workflow
+              id: skip-workflow # id used for referencing step
+              uses: saulmaldonado/skip-workflow@v1.1.0
+              with:
+                phrase: 'Cambio de version'
+                github-token: ${{ secrets.TOKEN_FIKO }}
             - run: composer install --prefer-dist --no-progress --no-suggest
-            - run: php artisan version:minor
+            - run: php artisan version:patch
             - name: Commit changes
+              if: ${{ !steps.skip-workflow.outputs.skip }}
               uses: EndBug/add-and-commit@v7
               with:
                 default_author: github_actions
