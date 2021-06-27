@@ -11,7 +11,7 @@ jobs:
         steps:
             - uses: actions/checkout@v2
               with:
-                token: ${{ secrets.TOKEN_FIKO }}
+                token: ${{ secrets.TOKEN_FIK }}
             - uses: shivammathur/setup-php@v1
               with:
                   php-version: 7.4
@@ -23,4 +23,3 @@ jobs:
                 default_author: github_actions
                 message: 'Cambio de version'
                 add: 'config/version.yml'
-                push: --force
