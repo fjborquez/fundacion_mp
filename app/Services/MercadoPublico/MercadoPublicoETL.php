@@ -6,6 +6,7 @@ use App\Services\MercadoPublico\Clients\MercadoPublicoHttpClient;
 use App\Services\MercadoPublico\Helpers\ClassLoaderHelper;
 use App\Services\MercadoPublico\Helpers\CsvHelper;
 use App\Services\MercadoPublico\Helpers\EtlHelper;
+use App\Services\MercadoPublico\Helpers\MailHelper;
 use App\Services\MercadoPublico\Helpers\SalesforceHelper;
 use App\Services\MercadoPublico\Mutex\Mutex;
 use BenTools\ETL\Etl;
@@ -25,6 +26,7 @@ class MercadoPublicoETL {
     private $modificadores;
     private $csvHelper;
     private $classLoaderHelper;
+    private $mailHelper;
 
     public function __construct() {
         $this->etlHelper = new EtlHelper();
@@ -32,6 +34,7 @@ class MercadoPublicoETL {
         $this->salesforceHelper = new SalesforceHelper();
         $this->csvHelper = new CsvHelper();
         $this->classLoaderHelper = new ClassLoaderHelper();
+        $this->mailHelper = new MailHelper();
         $this->filtros = [
             'premodificadores' => $this->classLoaderHelper->loadClasses($this->classLoaderHelper->getClasses('premodificadores'), 'App\\Services\\MercadoPublico\\Filtros\\'), 
             'postmodificadores' => $this->classLoaderHelper->loadClasses($this->classLoaderHelper->getClasses('postmodificadores'), 'App\\Services\\MercadoPublico\\Filtros\\'),
@@ -40,23 +43,24 @@ class MercadoPublicoETL {
         $this->validadores = $this->classLoaderHelper->loadClasses($this->classLoaderHelper->getClasses('validadores'), 'App\\Services\\MercadoPublico\\Modificadores\\');
     }
 
-    public function generarETL($sendToSalesforce = false) {
+    public function generarETL($sendToSalesforce = false, $sendToMail = false) {
         $licitaciones = [];
         
         $this->mutex->bloquear();
-        $licitaciones = $this->ejecutar(boolval($sendToSalesforce));
+        $licitaciones = $this->ejecutar(boolval($sendToSalesforce), boolval($sendToMail));
         $this->mutex->desbloquear();
         
         return $licitaciones;
     }
 
-    public function ejecutar($sendToSalesforce = false) {
+    public function ejecutar($sendToSalesforce = false, $sendToMail = false) {
         Log::info('Ha iniciado el proceso de ETL');
 
         $licitacionesProcesadas = [];
         $licitacionesConProblemas = [];
         $mercadoPublicoHttpClient = new MercadoPublicoHttpClient();
-        $fecha = Carbon::yesterday()->format('dmY');
+        //$fecha = Carbon::yesterday()->format('dmY');
+        $fecha = '07032021';
         $licitaciones = $mercadoPublicoHttpClient->obtenerLicitacionesConDetalles($fecha);
         
         Log::info('Enviar licitaciones a Salesforce: ' . var_export($sendToSalesforce, true));
@@ -81,9 +85,10 @@ class MercadoPublicoETL {
                         $licitacionesProcesadas[] = $licitacion;
                     }
                 })
-            ->onEnd(function(EndProcessEvent $event) use (&$licitacionesProcesadas, &$licitacionesConProblemas, $fecha, $sendToSalesforce) {
+            ->onEnd(function(EndProcessEvent $event) use (&$licitacionesProcesadas, &$licitacionesConProblemas, $fecha, $sendToSalesforce, $sendToMail) {
                 $this->csvHelper->generarArchivo($licitacionesConProblemas, $fecha);
                 $this->salesforceHelper->enviarLicitacionesASalesforce($licitacionesProcesadas, $sendToSalesforce);
+                $this->mailHelper->enviarLicitacionesAMail($licitacionesProcesadas, $sendToMail);
                 
                 Log::info('Ha concluido la ETL con ' . count($licitacionesProcesadas) . ' licitaciones filtradas.');
             })
