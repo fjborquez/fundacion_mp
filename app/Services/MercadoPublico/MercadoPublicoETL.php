@@ -59,8 +59,7 @@ class MercadoPublicoETL {
         $licitacionesProcesadas = [];
         $licitacionesConProblemas = [];
         $mercadoPublicoHttpClient = new MercadoPublicoHttpClient();
-        //$fecha = Carbon::yesterday()->format('dmY');
-        $fecha = '07032021';
+        $fecha = Carbon::yesterday()->format('dmY');
         $licitaciones = $mercadoPublicoHttpClient->obtenerLicitacionesConDetalles($fecha);
         
         Log::info('Enviar licitaciones a Salesforce: ' . var_export($sendToSalesforce, true));

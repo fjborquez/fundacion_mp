@@ -5,6 +5,7 @@
     </head>
     <body>
         <h1>{{ $asunto }}</h1>
+        <p>{{ $texto }}</p>
         <table>
             <thead>
                 <tr>

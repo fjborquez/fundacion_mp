@@ -38,6 +38,7 @@ class NotificacionMail extends Mailable
                     ->with([
                         'asunto' => $this->mailSettings->asunto,
                         'licitaciones' => $this->licitaciones,
+                        'texto' => $this->mailSettings->texto,
                     ]);
     }
 }
