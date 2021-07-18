@@ -13,15 +13,17 @@ class NotificacionMail extends Mailable
     use Queueable, SerializesModels;
 
     private $mailSettings;
+    private $licitaciones;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($licitaciones)
     {
         $this->mailSettings = app(MailSettings::class);
+        $this->licitaciones = $licitaciones;
     }
 
     /**
@@ -31,7 +33,11 @@ class NotificacionMail extends Mailable
      */
     public function build()
     {
-        return $this->subject($this->mailSettings->asunto)
-                    ->view('mail.notificacionMail');
+        return $this->subject($this->mailSettings->asunto, $this->licitaciones)
+                    ->view('mail.notificacionMail')
+                    ->with([
+                        'asunto' => $this->mailSettings->asunto,
+                        'licitaciones' => $this->licitaciones,
+                    ]);
     }
 }

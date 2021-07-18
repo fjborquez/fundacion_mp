@@ -14,7 +14,7 @@ class MailHelper {
 
     public function enviarLicitacionesAMail($licitacionesProcesadas, $sendToMail) {
         if ($sendToMail) {
-            Mail::to($this->mailSettings->mail_destinatario)->send(new \App\Mail\NotificacionMail());
+            Mail::to($this->mailSettings->mail_destinatario)->send(new \App\Mail\NotificacionMail($licitacionesProcesadas));
         }
     }
 }
