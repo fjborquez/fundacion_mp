@@ -30,18 +30,20 @@ class CsvHelper {
         foreach ($licitacion['Items']['Listado'] as $item) {
             $adjudicacion = $item['Adjudicacion'];
 
-            $adjudicaciones[] = [
-                ++$index,
-                $adjudicacion['NombreProveedor'],
-                $adjudicacion['RutProveedor'],
-                $licitacion['CodigoExterno'],
-                $licitacion['Nombre'],
-                $licitacion['Descripcion'],
-                $licitacion['Adjudicacion']['Fecha'],
-                $licitacion['Tipo'],
-                $licitacion['Comprador']['NombreOrganismo'],
-                $adjudicacion['Cantidad'] * $adjudicacion['MontoUnitario'],
-            ];
+            if ($adjudicacion != null) {
+                $adjudicaciones[] = [
+                    ++$index,
+                    $adjudicacion['NombreProveedor'],
+                    $adjudicacion['RutProveedor'],
+                    $licitacion['CodigoExterno'],
+                    $licitacion['Nombre'],
+                    $licitacion['Descripcion'],
+                    $licitacion['Adjudicacion']['Fecha'],
+                    $licitacion['Tipo'],
+                    $licitacion['Comprador']['NombreOrganismo'],
+                    $adjudicacion['Cantidad'] * $adjudicacion['MontoUnitario'],
+                ];
+            }
         }
 
         return $adjudicaciones;
